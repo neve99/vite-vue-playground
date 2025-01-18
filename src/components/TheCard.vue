@@ -1,41 +1,53 @@
 <script setup>
-import { ref, defineProps, watch } from 'vue'
-import { gsap } from 'gsap'
-const props = defineProps({
-  getNextZIndex: Function,
-  setActiveCard: Function,
-  activeCardId: Object,
-  cardId: String
-})
+  import { ref, defineProps, watch, computed } from 'vue'
+  import { gsap } from 'gsap'
+  const props = defineProps({
+    getNextZIndex: Function,
+    setActiveCard: Function,
+    activeCardId: [String, Number],
+    cardId: [String, Number]
+  })
+
+  const left = computed('calc(50vw - 100px)')
+  const top = computed('calc(50vh - 150px)')
 
 
+  const count = ref(0)
+  const cardRef = ref(null)
+  const zIndex = ref(1)
 
-const count = ref(0)
-const cardRef = ref(null)
-const zIndex = ref(1)
-
-// trigger animation
-
-const trigger = () => {
-  gsap.to(cardRef.value, { duration: 1, x: '50vw', y: '50vh', ease: 'power1.inOut' })
-  props.setActiveCard(props.cardId) // Set this card as the active card
-}
-
-// update z-index when card is dragged
-const updatezIndex = () => {
   
-  zIndex.value = props.getNextZIndex()
-  // console.log('zIndex', zIndex.value)
-}
+ 
+  // trigger animation
 
-// Watch for changes in activeCardId to apply the blur effect
-watch(() => props.activeCardId, (newVal) => {
-  if (newVal === props.cardId || newVal === null) {
-    gsap.to(cardRef.value, { filter: 'none', duration: 0.5,  ease: 'power1.inOut'})
-  } else {
-    gsap.to(cardRef.value, { filter: 'blur(5px)', duration: 0.1, ease: 'power1.inOut'})
+  const trigger = () => {
+    gsap.to(cardRef.value, { x: 100, duration: 1, ease: 'power1.inOut' })
+    props.setActiveCard(props.cardId) // Set this card as the active card
+
+    console.log(cardRef.value)
   }
-})
+
+  // update z-index when card is dragged
+  const updatezIndex = () => {
+    
+    zIndex.value = props.getNextZIndex()
+    // console.log('zIndex', zIndex.value)
+  }
+
+  // Watch for changes in activeCardId to apply the blur effect
+  watch(() => props.activeCardId, (newVal) => {
+    if (newVal === props.cardId || newVal === null) {
+      gsap.to(cardRef.value, { 
+        filter: 'blur(0)', 
+        backgroundColor: '#000',
+        duration: 0.5, 
+        ease: 'power1.inOut' })
+      console.log('none')
+    } else {
+      gsap.to(cardRef.value, { filter: 'blur(5px)', backgroundColor: '#fff', duration: 0.5, ease: 'power1.inOut' })
+      console.log('blur')
+    }
+  })
 
 
 </script>
@@ -64,9 +76,11 @@ watch(() => props.activeCardId, (newVal) => {
   text-align: center;
   background-color: #000;
 
-  position: absolute;
+  position: fixed;
   top: 20%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+
 </style>
