@@ -36,7 +36,7 @@ onUnmounted(() => {
     <TheCard :get-next-z-index="getNextZIndex" :set-active-card="setActiveCard" :active-card-id="activeCardId" card-id="2"/>
     <TheCard :get-next-z-index="getNextZIndex" :set-active-card="setActiveCard" :active-card-id="activeCardId" card-id="3"/>
 
-    <TheTestCube />
+    <!-- <TheTestCube /> -->
     <h1>Home</h1>
     <p>Welcome to your new project!</p>
 
