@@ -12,7 +12,7 @@ const cardRef = ref(null)
 const zIndex = ref(1)
 
 const trigger = () => {
-  gsap.fromTo(cardRef.value, { x: 0 }, {duration: 1, x: 100})
+  gsap.to(cardRef.value,  {duration: 1, top: '50%', left: '50%', x: 0, y: 0, ease: 'elastic.out(1, 0.3)'})
 }
 
 const updatezIndex = () => {
