@@ -1,8 +1,11 @@
 <script setup>
-import { ref, defineProps } from 'vue'
+import { ref, defineProps, watch } from 'vue'
 import { gsap } from 'gsap'
 const props = defineProps({
-  getNextZIndex: Function
+  getNextZIndex: Function,
+  setActiveCard: Function,
+  activeCardId: Object,
+  cardId: String
 })
 
 
@@ -11,15 +14,28 @@ const count = ref(0)
 const cardRef = ref(null)
 const zIndex = ref(1)
 
+// trigger animation
+
 const trigger = () => {
-  gsap.fromTo(cardRef.value, { x: 0 }, {duration: 1, x: 100})
+  gsap.to(cardRef.value, { duration: 1, x: '50vw', y: '50vh', ease: 'power1.inOut' })
+  props.setActiveCard(props.cardId) // Set this card as the active card
 }
 
+// update z-index when card is dragged
 const updatezIndex = () => {
   
   zIndex.value = props.getNextZIndex()
-  console.log('zIndex', zIndex.value)
+  // console.log('zIndex', zIndex.value)
 }
+
+// Watch for changes in activeCardId to apply the blur effect
+watch(() => props.activeCardId, (newVal) => {
+  if (newVal === props.cardId || newVal === null) {
+    gsap.to(cardRef.value, { filter: 'none', duration: 0.5,  ease: 'power1.inOut'})
+  } else {
+    gsap.to(cardRef.value, { filter: 'blur(5px)', duration: 0.1, ease: 'power1.inOut'})
+  }
+})
 
 
 </script>
