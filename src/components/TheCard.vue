@@ -46,18 +46,21 @@
         filter: 'blur(0)', 
         backgroundColor: '#000',
         duration: 0.5, 
+        pointerEvents: 'auto',
         ease: 'power1.inOut' })
-      console.log('none')
+
     } else {
-      gsap.to(cardRef.value, { filter: 'blur(5px)', backgroundColor: '#fff', duration: 0.5, ease: 'power1.inOut' })
-      console.log('blur')
+      gsap.to(cardRef.value, { filter: 'blur(5px)', backgroundColor: '#fff', 
+      pointerEvents: 'none',
+      duration: 0.5, ease: 'power1.inOut' })
+
     }
 
     // If activeCardId is null, return the card to its saved position
 
     if (newVal === null && oldVal === props.cardId) {
       gsap.to(cardRef.value, { duration: 1, left: savedPosition.value.left, top: savedPosition.value.top, ease: 'power1.inOut' })
-      console.log('Returned to saved position')
+
     }
   })
 

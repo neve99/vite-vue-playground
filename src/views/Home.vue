@@ -14,7 +14,7 @@ const setActiveCard = (id) => {
 const handleClickOutside = (event) => {
   if (!event.target.closest('.card')) {
     activeCardId.value = null
-    console.log('click outside')
+
   }
 }
 
