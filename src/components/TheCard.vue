@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, defineProps, watch, onMounted, onUnmounted } from 'vue'
+  import { ref, watch, onMounted, onUnmounted } from 'vue'
   import { gsap } from 'gsap'
   const props = defineProps({
     getNextZIndex: Function,
