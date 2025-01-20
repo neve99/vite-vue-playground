@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import TheCard from '@/components/TheCard.vue';
-import TheTestCube from '@/components/TheTestCube.vue';
+import TheSmallPage from '@/components/TheSmallPage.vue';
+import { useRouter } from 'vue-router';
 import { gsap } from 'gsap'
 const zIndexCounter = ref(1)
 const activeCardId = ref(null) // Reactive property to track the active card
+
 const getNextZIndex = () => {
   return ++zIndexCounter.value
 }
@@ -27,6 +29,9 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
+
+// subpage transition
+
 </script>
 
 <template>
@@ -35,7 +40,8 @@ onUnmounted(() => {
     <TheCard :get-next-z-index="getNextZIndex" :set-active-card="setActiveCard" :active-card-id="activeCardId" card-id="1"/>
     <TheCard :get-next-z-index="getNextZIndex" :set-active-card="setActiveCard" :active-card-id="activeCardId" card-id="2"/>
     <TheCard :get-next-z-index="getNextZIndex" :set-active-card="setActiveCard" :active-card-id="activeCardId" card-id="3"/>
-
+    
+    <TheSmallPage :active-card-id="activeCardId"/>
     <!-- <TheTestCube /> -->
     <h1>Home</h1>
     <p>Welcome to your new project!</p>
