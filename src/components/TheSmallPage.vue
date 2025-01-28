@@ -1,5 +1,7 @@
-<template>
+  <template>
+
   <div class="small-page" ref="smallPageRef">
+    
     <h1>this is the small page for card {{ activeDisplay }}</h1>
     <div class="placeholder"></div>
   </div>
