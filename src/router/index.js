@@ -6,7 +6,10 @@ const routes = [
     component: () => import('../views/Home.vue'),
 
   },
-
+  {
+    path: '/canvas',
+    component: () => import('../views/CanvasScraping.vue'),
+  },
 ]
 
 const router = createRouter({
