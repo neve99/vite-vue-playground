@@ -30,7 +30,7 @@
 
     background-color: #0000ff;
 
-    position: absolute;
+    position: fixed;
     top: 0;
   }
 </style>

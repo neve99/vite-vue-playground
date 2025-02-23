@@ -4,11 +4,15 @@ const routes = [
   {
     path: '/',
     component: () => import('../views/Home.vue'),
+    children: [
+      {
+        path: 'project',
+        name: 'ProjectShow',
+        component: () => import('../views/ProjectShow.vue'),
+      }
+    ]
   },
-  {
-    path: '/project',
-    component: () => import('../views/ProjectShow.vue'),
-  }
+
 ]
 
 const router = createRouter({

@@ -1,7 +1,7 @@
   <template>
 
-  <div class="small-page" ref="smallPageRef">
-    
+  <div class="small-page" ref="smallPageRef" >
+    <router-link :to="{ name: 'ProjectShow' }" class="small-page-link">here</router-link>
     <h1>this is the small page for card {{ activeDisplay }}</h1>
     <div class="placeholder"></div>
   </div>
@@ -10,12 +10,13 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { gsap } from 'gsap'
-
+import { useRouter } from 'vue-router'
 const props = defineProps({
   activeCardId: [String, Number],
 })
 const activeDisplay = ref(0)
 const smallPageRef = ref(null)
+const router = useRouter()
 
 watch(() => props.activeCardId, (newVal, oldVal) => {
   if (oldVal == null && newVal !== null) {
@@ -29,6 +30,10 @@ watch(() => props.activeCardId, (newVal, oldVal) => {
 
   
 })
+
+const navigateToProjectShow = () => {
+  router.push({ name: 'ProjectShow' })
+}
 
 
 </script>

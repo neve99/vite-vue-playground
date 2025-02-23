@@ -31,7 +31,34 @@ onUnmounted(() => {
 })
 
 // subpage transition
+const beforeEnter = (el) => {
+  console.log('before enter')
+  gsap.set(el, {
+    opacity: 0,
+    y: -100 // Start from above the screen
+  });
+}
 
+const enter = (el, done) => {
+  console.log('enter')
+  gsap.to(el, {
+    opacity: 1,
+    y: 0,
+    duration: 0.5,
+    onComplete: done
+    
+  });
+}
+
+const leave = (el, done) => {
+  console.log('leave')
+  gsap.to(el, {
+    opacity: 0,
+    y: 100, // Move down when leaving
+    duration: 0.5,
+    onComplete: done
+  });
+}
 </script>
 
 <template>
@@ -44,7 +71,34 @@ onUnmounted(() => {
     <TheSmallPage :active-card-id="activeCardId"/>
     <!-- <TheTestCube /> -->
     <h1>Home</h1>
+    <div >
+      
+      <router-view v-slot="{ Component, route }">
+        {{ console.log('Component:', Component) }}
+        <transition
+          @before-enter="beforeEnter"
+          @enter="enter"
+          @leave="leave"
+        >
+          <component :is="Component" :key="route.path" class="child-container"></component>
+        </transition>
+      </router-view>
+      
+    </div>  
     <p>Welcome to your new project!</p>
+
+    
 
   </div>
 </template>
+
+<style scoped>
+  .child-container {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    z-index: 101;
+    
+  }
+
+</style>
