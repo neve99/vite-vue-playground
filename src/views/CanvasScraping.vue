@@ -4,13 +4,13 @@
     <img src="/cross100.svg" />
     <span class="cursor-text" ref="cursorText">this is cool</span>
   </div>
-  <p class="test">
+  <div class="pattern"></div>
+  <!-- <p class="test">
     Quantum entanglement is the phenomenon of a group of particles being generated, interacting, or sharing spatial proximity in a manner such that the quantum state of each particle of the group cannot be described independently of the state of the others, including when the particles are separated by a large distance. The topic of quantum entanglement is at the heart of the disparity between classical physics and quantum physics: entanglement is a primary feature of quantum mechanics not present in classical mechanics.
   
     Measurements of physical properties such as position, momentum, spin, and polarization performed on entangled particles can, in some cases, be found to be perfectly correlated. For example, if a pair of entangled particles is generated such that their total spin is known to be zero, and one particle is found to have clockwise spin on a first axis, then the spin of the other particle, measured on the same axis, is found to be anticlockwise. However, this behavior gives rise to seemingly paradoxical effects: any measurement of a particle's properties results in an apparent and irreversible wave function collapse of that particle and changes the original quantum state. With entangled particles, such measurements affect the entangled system as a whole.
-
-
-  </p>
+  </p> -->
+  <h1 class="test">Scratch me</h1>
   <canvas class="in" ref="canvas"></canvas>
 
 </template>
@@ -68,6 +68,7 @@
 
   const setupCanvas = (canvas) => {
     /* 
+    // generated code to cover the whole screen
     const canvas = canvas.value
     const ctx = canvas.getContext('2d')
     canvas.width = window.innerWidth
@@ -87,10 +88,10 @@
     const ctx = canvas.getContext('2d')
 
     ctx.scale(dpr, dpr)
-    ctx.fillStyle = 'red'
-    ctx.strokeStyle = 'red'
+    ctx.fillStyle = '#000'
+    ctx.strokeStyle = '#fff'
 
-    ctx.fillRect(0, 0, 100, 100) 
+    ctx.fillRect(0, 0, w, h) 
 
     ctx.lineWidth = 80
     ctx.lineCap = 'round'
@@ -102,6 +103,10 @@
     const rect = canvas.getBoundingClientRect()
     const x = (e.clientX - rect.left) 
     const y = (e.clientY - rect.top) 
+
+    // const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange']
+    // const randomColor = colors[Math.floor(Math.random() * colors.length)]
+    // ctx.strokeStyle = randomColor
     ctx.beginPath()
     ctx.moveTo(x, y)
   }
@@ -187,6 +192,7 @@
   }
   .test {
     user-select: none;
+    color: #d4d4d4;
   }
   canvas.in {
     position: fixed;
@@ -196,6 +202,17 @@
     height: 100%;
     z-index: -1;
 
+    mix-blend-mode: lighten;
+  }
+  .pattern{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/scraping-bg.jpeg');
+    background-size: repeat;
+    z-index: -2;
   }
   
 </style>
