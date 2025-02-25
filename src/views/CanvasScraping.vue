@@ -22,12 +22,13 @@
   const cursor = ref(null)
   const cursorText = ref(null)
   const cursorCircle = ref(null)
-  let fadeInTrigger = false
+  const fadeInTrigger = ref(false)
   const canvas = ref(null)
+  const isMouseDown = ref(false)
 
   const handleMouseMove = (e) => {
-    if (!fadeInTrigger) {
-      fadeInTrigger = true
+    if (!fadeInTrigger.value) {
+      fadeInTrigger.value = true
       gsap.to(cursor.value, { opacity: 1, duration: 0.1, delay: 0.1 })
     }
     gsap.to(cursor.value, {
@@ -40,18 +41,21 @@
 
   }
 
-  const handleMouseDown = () => {
-      gsap.to(cursorCircle.value, {
-        scale: 5.5,
-        duration: 0.1,
-      })
-      gsap.to(cursorText.value, {
-        innerText: 'release me plz',
-      })
+  const handleMouseDown = (e) => {
+    isMouseDown.value = true
+    startDraw(canvas.value, e)
+    gsap.to(cursorCircle.value, {
+      scale: 5.5,
+      duration: 0.1,
+    })
+    gsap.to(cursorText.value, {
+      innerText: 'release me plz',
+    })
       
   }
 
   const handleMouseUp = () => {
+    isMouseDown.value = false
     gsap.to(cursorCircle.value, {
       scale: 1,
       duration: 0.1,
@@ -81,19 +85,38 @@
     canvas.style.height = h + 'px'
 
     const ctx = canvas.getContext('2d')
-    ctx.fillStyle = 'red'
-    ctx.fillRect(0, 0, 100, 100) 
-  }
 
+    ctx.scale(dpr, dpr)
+    ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'red'
+
+    ctx.fillRect(0, 0, 100, 100) 
+
+    ctx.lineWidth = 80
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    
+  }
+  const startDraw = (canvas, e) => {
+    const ctx = canvas.getContext('2d')
+    const rect = canvas.getBoundingClientRect()
+    const x = (e.clientX - rect.left) 
+    const y = (e.clientY - rect.top) 
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+  }
   const moveDraw = (canvas, e) => {
     const ctx = canvas.getContext('2d')
     const rect = canvas.getBoundingClientRect()
-    const dpr = window.devicePixelRatio
-    const x = (e.clientX - rect.left) * dpr
-    const y = (e.clientY - rect.top) * dpr
-  
-    ctx.fillStyle = 'red'
-    ctx.fillRect(x - 50, y - 50, 100, 100)
+    const x = (e.clientX - rect.left) 
+    const y = (e.clientY - rect.top) 
+    
+    // pixel rectangle draw
+    // ctx.fillRect(x - 50, y - 50, 100, 100)
+    if (isMouseDown.value) {
+    ctx.lineTo(x, y)
+    ctx.stroke()
+    }
   }
 
   onMounted(() => {
