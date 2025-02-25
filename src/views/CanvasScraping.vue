@@ -1,6 +1,7 @@
 <template>
   <div class="cursor" ref="cursor">
     <div class="cursor-circle" ref="cursorCircle"></div>
+    <img src="/cross100.svg" />
     <span class="cursor-text" ref="cursorText">this is cool</span>
   </div>
   <p class="test">
@@ -10,6 +11,7 @@
 
 
   </p>
+  <canvas class="in" ref="canvas"></canvas>
 
 </template>
 
@@ -21,6 +23,7 @@
   const cursorText = ref(null)
   const cursorCircle = ref(null)
   let fadeInTrigger = false
+  const canvas = ref(null)
 
   const handleMouseMove = (e) => {
     if (!fadeInTrigger) {
@@ -32,50 +35,89 @@
       y: e.clientY,
       duration: 0.2,
     })
+
+    moveDraw(canvas.value, e)
+
   }
 
-const handleMouseDown = () => {
+  const handleMouseDown = () => {
+      gsap.to(cursorCircle.value, {
+        scale: 5.5,
+        duration: 0.1,
+      })
+      gsap.to(cursorText.value, {
+        innerText: 'release me plz',
+      })
+      
+  }
+
+  const handleMouseUp = () => {
     gsap.to(cursorCircle.value, {
-      scale: 3.5,
+      scale: 1,
       duration: 0.1,
     })
     gsap.to(cursorText.value, {
-      innerText: 'release me plz',
+      innerText: 'this is cool',
     })
     
   }
 
-const handleMouseUp = () => {
-  gsap.to(cursorCircle.value, {
-    scale: 1,
-    duration: 0.1,
-  })
-  gsap.to(cursorText.value, {
-    innerText: 'this is cool',
-  })
+  const setupCanvas = (canvas) => {
+    /* 
+    const canvas = canvas.value
+    const ctx = canvas.getContext('2d')
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, canvas.width, canvas.height) 
+    */
+    const w = window.innerWidth
+    const h = window.innerHeight
+    const dpr = window.devicePixelRatio
+
+    canvas.width = w * dpr
+    canvas.height = h * dpr
+    canvas.style.width = w + 'px'
+    canvas.style.height = h + 'px'
+
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = 'red'
+    ctx.fillRect(0, 0, 100, 100) 
+  }
+
+  const moveDraw = (canvas, e) => {
+    const ctx = canvas.getContext('2d')
+    const rect = canvas.getBoundingClientRect()
+    const dpr = window.devicePixelRatio
+    const x = (e.clientX - rect.left) * dpr
+    const y = (e.clientY - rect.top) * dpr
   
-}
+    ctx.fillStyle = 'red'
+    ctx.fillRect(x - 50, y - 50, 100, 100)
+  }
 
-onMounted(() => {
-  // Add class to body to hide cursor
-  document.body.classList.add('hide-cursor')
+  onMounted(() => {
+    // Add class to body to hide cursor
+    document.body.classList.add('hide-cursor')
 
-  // Initial opacity set to 0
-  gsap.set(cursor.value, { opacity: 0 })
+    // Initial opacity set to 0
+    gsap.set(cursor.value, { opacity: 0 })
 
-  window.addEventListener('mousemove', handleMouseMove)
-  window.addEventListener('mousedown', handleMouseDown)
-  window.addEventListener('mouseup', handleMouseUp)
-})
+    setupCanvas(canvas.value)
 
-onUnmounted(() => {
-  // Remove class from body to restore cursor
-  document.body.classList.remove('hide-cursor')
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mouseup', handleMouseUp)
+  })
 
-  window.removeEventListener('mousemove', handleMouseMove)
-  window.removeEventListener('mousedown', handleMouseDown)
-  window.removeEventListener('mouseup', handleMouseUp)
-})
+  onUnmounted(() => {
+    // Remove class from body to restore cursor
+    document.body.classList.remove('hide-cursor')
+
+    window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('mousedown', handleMouseDown)
+    window.removeEventListener('mouseup', handleMouseUp)
+  })
 </script>
 
 <style scoped>
@@ -104,8 +146,8 @@ onUnmounted(() => {
   }
   .cursor-circle {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 10px;
+    height: 10px;
     background-color: white;
     border-radius: 50%;
     pointer-events: none;
@@ -114,8 +156,23 @@ onUnmounted(() => {
     left: 0px;
     transform: translate(-50%, -50%);
   }
+  .cursor img {
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    user-select: none;
+  }
   .test {
     user-select: none;
+  }
+  canvas.in {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+
   }
   
 </style>
