@@ -121,6 +121,9 @@
     ctx.lineWidth = 80
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
+
+    ctx.shadowBlur = 25
+    ctx.shadowColor = ctx.strokeStyle
     
   }
   const startDraw = (canvas, e) => {
@@ -161,6 +164,10 @@
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
+    window.addEventListener('resize', () => {
+      setupCanvas(canvas.value)
+      setupCanvas(canvasOut.value)
+    })
   })
 
   onUnmounted(() => {
@@ -169,6 +176,10 @@
     window.removeEventListener('mousemove', handleMouseMove)
     window.removeEventListener('mousedown', handleMouseDown)
     window.removeEventListener('mouseup', handleMouseUp)
+    window.removeEventListener('resize', () => {
+      setupCanvas(canvas.value)
+      setupCanvas(canvasOut.value)
+    })
   })
 </script>
 
@@ -185,17 +196,23 @@
     z-index: 1000;
   }
   .cursor span {
+    box-sizing: border-box;
     position: absolute;
     top: 40px;
-    left: 80px;
-    transform: translate(-50%, -50%);
+    left: 40px;
+
+    width: auto;
+    white-space: nowrap;
+
+    /* padding: 10px, 10px; */
+    /* transform: translate(-50%, -50%); */
     font-size: 14px;
     color: white;
     font-weight: bold;
     pointer-events: none;
     user-select: none;
-    width: 100px;
     text-align: left;
+    /* border: 1px solid white; */
   }
   .cursor-circle {
     position: absolute;
