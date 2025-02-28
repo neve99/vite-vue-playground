@@ -4,14 +4,22 @@
     <img src="/cross100.svg" />
     <span class="cursor-text" ref="cursorText">this is cool</span>
   </div>
-  <div class="pattern"></div>
+  <h1 class="test">Scratch me</h1>
+  
+  <section class="scratched-in">
+    <div class="pattern"></div>
+    <canvas class="in" ref="canvas"></canvas>
+  </section>
+  <section class="scratched-out">
+    <img src="/images/scraping-out.jpeg" alt="">
+    <canvas class="out" ref="canvasOut"></canvas>
+  </section>
+  
   <!-- <p class="test">
     Quantum entanglement is the phenomenon of a group of particles being generated, interacting, or sharing spatial proximity in a manner such that the quantum state of each particle of the group cannot be described independently of the state of the others, including when the particles are separated by a large distance. The topic of quantum entanglement is at the heart of the disparity between classical physics and quantum physics: entanglement is a primary feature of quantum mechanics not present in classical mechanics.
   
     Measurements of physical properties such as position, momentum, spin, and polarization performed on entangled particles can, in some cases, be found to be perfectly correlated. For example, if a pair of entangled particles is generated such that their total spin is known to be zero, and one particle is found to have clockwise spin on a first axis, then the spin of the other particle, measured on the same axis, is found to be anticlockwise. However, this behavior gives rise to seemingly paradoxical effects: any measurement of a particle's properties results in an apparent and irreversible wave function collapse of that particle and changes the original quantum state. With entangled particles, such measurements affect the entangled system as a whole.
   </p> -->
-  <h1 class="test">Scratch me</h1>
-  <canvas class="in" ref="canvas"></canvas>
 
 </template>
 
@@ -24,9 +32,11 @@
   const cursorCircle = ref(null)
   const fadeInTrigger = ref(false)
   const canvas = ref(null)
+  const canvasOut = ref(null)
   const isMouseDown = ref(false)
 
   const handleMouseMove = (e) => {
+
     if (!fadeInTrigger.value) {
       fadeInTrigger.value = true
       gsap.to(cursor.value, { opacity: 1, duration: 0.1, delay: 0.1 })
@@ -38,12 +48,14 @@
     })
 
     moveDraw(canvas.value, e)
+    moveDraw(canvasOut.value, e)
 
   }
 
   const handleMouseDown = (e) => {
     isMouseDown.value = true
     startDraw(canvas.value, e)
+    startDraw(canvasOut.value, e)
     gsap.to(cursorCircle.value, {
       scale: 5.5,
       duration: 0.1,
@@ -66,6 +78,7 @@
     
   }
 
+  // Setup canvas /////////////////////////////////////////////////
   const setupCanvas = (canvas) => {
     /* 
     // generated code to cover the whole screen
@@ -88,8 +101,20 @@
     const ctx = canvas.getContext('2d')
 
     ctx.scale(dpr, dpr)
-    ctx.fillStyle = '#000'
-    ctx.strokeStyle = '#fff'
+
+    /* if (canvas.classList.contains('in')) {
+      ctx.globalCompositeOperation = 'source-over'
+    } else {
+      ctx.globalCompositeOperation = 'destination-out'
+    } */
+
+    if (canvas.classList.contains('in')) {
+      ctx.fillStyle = '#fff'
+      ctx.strokeStyle = '#000'
+    } else {
+      ctx.fillStyle = '#000'
+      ctx.strokeStyle = '#fff'
+    }
 
     ctx.fillRect(0, 0, w, h) 
 
@@ -132,7 +157,7 @@
     gsap.set(cursor.value, { opacity: 0 })
 
     setupCanvas(canvas.value)
-
+    setupCanvas(canvasOut.value)
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
@@ -141,7 +166,6 @@
   onUnmounted(() => {
     // Remove class from body to restore cursor
     document.body.classList.remove('hide-cursor')
-
     window.removeEventListener('mousemove', handleMouseMove)
     window.removeEventListener('mousedown', handleMouseDown)
     window.removeEventListener('mouseup', handleMouseUp)
@@ -158,6 +182,7 @@
     left: 0px;
     
     transform: translate(-50%, -50%);
+    z-index: 1000;
   }
   .cursor span {
     position: absolute;
@@ -194,16 +219,24 @@
     user-select: none;
     color: #d4d4d4;
   }
-  canvas.in {
-    position: fixed;
+  canvas {
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
-
     mix-blend-mode: lighten;
   }
+  
+  section.scratched-out {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: darken;
+  }
+
   .pattern{
     position: absolute;
     top: 0;
@@ -212,7 +245,13 @@
     height: 100%;
     background-image: url('/images/scraping-bg.jpeg');
     background-size: repeat;
-    z-index: -2;
+
+  }
+  section.scratched-out img{
+    
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
 </style>
