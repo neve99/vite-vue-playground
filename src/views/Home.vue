@@ -6,7 +6,11 @@
     <div >
     </div>  
     <p>Here are the projects:</p>
-    <router-link to="/canvas">Canvas Scraping</router-link>
+    <div class="router-links">
+      <router-link to="/canvas">Canvas Scraping</router-link>
+      <router-link to="/snow">Snow Scraping</router-link>
+    </div>
+    
   </div>
 </template>
 
@@ -18,5 +22,16 @@ import { gsap } from 'gsap'
 </script>
 
 <style scoped>
+  .router-links {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: start;
 
+
+  }
+  a {
+    font-size: 16px;
+    font-weight: 600;
+  }
 </style>

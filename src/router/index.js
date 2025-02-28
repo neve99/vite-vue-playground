@@ -10,6 +10,10 @@ const routes = [
     path: '/canvas',
     component: () => import('../views/CanvasScraping.vue'),
   },
+  {
+    path: '/snow',
+    component: () => import('../views/SnowScraping.vue'),
+  }
 ]
 
 const router = createRouter({

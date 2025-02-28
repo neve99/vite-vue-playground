@@ -2,7 +2,7 @@
   <div class="cursor" ref="cursor">
     <div class="cursor-circle" ref="cursorCircle"></div>
     <img src="/cross100.svg" />
-    <span class="cursor-text" ref="cursorText">this is cool</span>
+    <span class="cursor-text" ref="cursorText">draw something</span>
   </div>
   <h1 class="test">Scratch me</h1>
   
