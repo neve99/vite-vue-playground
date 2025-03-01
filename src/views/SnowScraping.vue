@@ -1,6 +1,6 @@
 <!-- 
 Todo:
-- make draw arc also has a interval
+
 - make draw with other vectors
 -->
 
@@ -23,7 +23,7 @@ TEMPLATE
     <img src="/images/mg-pov.png" class="mg" ref="mg">
     <span class="cursor-text" ref="cursorText">this is cool</span>
   </div>
-  <h1 class="test">Scratch me</h1>
+  <h1 class="test">I'm free</h1>
   
   <section class="scratched-in">
     <canvas class="in" ref="canvas"></canvas>
@@ -94,9 +94,12 @@ const handleMouseDown = (e) => {
   let lastTime = 0;
   const interval = 100; // 100ms interval
   let animationFrame;
-  
-  // Set up interval for both sound and drawing
-  soundInterval.value = setInterval(() => {
+
+  // Animation function that will be called with requestAnimationFrame
+  const animateWithTiming = (timestamp) => {
+    if (!isMouseDown.value) return; // Stop if mouse is up
+    // Check if enough time has passed for our interval
+    if (!lastTime || timestamp - lastTime >= interval) {
     // Reset cursor scale first
     gsap.set(cursorCircle.value, {
       scale: 1
@@ -110,32 +113,43 @@ const handleMouseDown = (e) => {
 
      // First reset the mg position
     gsap.set(mg.value, {
-      x: 0,
-      y: 0
+      x: 20,
+      y: 20
     })
     
     // Then animate mg to move back 50px in both x and y directions
     gsap.to(mg.value, {
-      x: 20, // Use negative value to move back in x direction
-      y: 20, // Use negative value to move back in y direction
+      x: 0, // Use negative value to move back in x direction
+      y: 0, // Use negative value to move back in y direction
       duration: 0.1,
     })
 
     // Enable drawing for the next move event
     canDraw.value = true
     
-    // If mouse hasn't moved, draw at last position
-    if (isMouseDown.value && lastPosition.value) {
-      const simulatedEvent = {
-        clientX: lastPosition.value.x,
-        clientY: lastPosition.value.y
+    // Draw at last position
+    if (lastPosition.value) {
+        const simulatedEvent = {
+          clientX: lastPosition.value.x,
+          clientY: lastPosition.value.y
+        };
+        erase(canvas.value, simulatedEvent);
       }
-      erase(canvas.value, simulatedEvent)
-    }
     
     // Play sound with each interval
-    playEraseSound()
-  }, 250)
+    playEraseSound()// Update last time
+      lastTime = timestamp;
+    }
+    
+    // Continue animation loop
+    animationFrame = requestAnimationFrame(animateWithTiming);
+  };
+  
+  // Start animation loop
+  animationFrame = requestAnimationFrame(animateWithTiming);
+  
+  // Store the animation frame ID for cleanup
+  soundInterval.value = animationFrame; // Repurpose soundInterval for cleanup
 }
 
 const handleMouseUp = () => {
@@ -268,8 +282,8 @@ STYLE
 .cursor span {
   box-sizing: border-box;
   position: absolute;
-  top: 120px;
-  left: 40px;
+  top: 150px;
+  left: 70px;
   width: auto;
   white-space: nowrap;
   font-size: 14px;
@@ -278,6 +292,10 @@ STYLE
   pointer-events: none;
   user-select: none;
   text-align: left;
+}
+h1.test{
+  font-size: 10vw;
+  color: #fff;
 }
 .cursor-circle {
   position: absolute;
@@ -300,8 +318,8 @@ STYLE
 .cursor img.mg {
   width: 100px;
   height: 100px;
-  top: 60px;
-  left: 50px;
+  top: 90px;
+  left: 80px;
   mix-blend-mode: difference;
 }
 .cursor img.cross {
