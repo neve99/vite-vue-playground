@@ -16,6 +16,7 @@ TEMPLATE
   <div class="cursor" ref="cursor">
     <div class="cursor-circle" ref="cursorCircle"></div>
     <img src="/cross100.svg" />
+    <img src="/images/mg-pov.png" class="mg">
     <span class="cursor-text" ref="cursorText">this is cool</span>
   </div>
   <h1 class="test">Scratch me</h1>
@@ -43,6 +44,8 @@ const canvas = ref(null)
 const isMouseDown = ref(false)
 const audio = ref(null)
 const soundInterval = ref(null)
+const lastPosition = ref({ x: 0, y: 0 })
+const canDraw = ref(true)
 
 const handleMouseMove = (e) => {
   if (!fadeInTrigger.value) {
@@ -55,15 +58,23 @@ const handleMouseMove = (e) => {
     duration: 0.2,
   })
 
-  if (isMouseDown.value) {
+  // Store the current mouse position regardless of whether we can draw
+  lastPosition.value = { 
+    x: e.clientX,
+    y: e.clientY
+  }
+
+  // Only erase if mouse is down AND we're allowed to draw
+  if (isMouseDown.value && canDraw.value) {
     erase(canvas.value, e)
+    canDraw.value = false
   }
 }
 
 const handleMouseDown = (e) => {
 
   isMouseDown.value = true
-  erase(canvas.value, e)
+
   gsap.to(cursorCircle.value, {
     scale: 5.5,
     duration: 0.1,
@@ -72,12 +83,26 @@ const handleMouseDown = (e) => {
     innerText: 'release me plz',
   })
 
-  // Play sound immediately on mouse down
+  // Allow immediate drawing and sound on first click
+  canDraw.value = true
+  erase(canvas.value, e)
   playEraseSound()
   
-  // Set up interval to play sound repeatedly while mouse is down
-  // Sound will play every 300ms (adjust as needed)
+  // Set up interval for both sound and drawing
   soundInterval.value = setInterval(() => {
+    // Enable drawing for the next move event
+    canDraw.value = true
+    
+    // If mouse hasn't moved, draw at last position
+    if (isMouseDown.value && lastPosition.value) {
+      const simulatedEvent = {
+        clientX: lastPosition.value.x,
+        clientY: lastPosition.value.y
+      }
+      erase(canvas.value, simulatedEvent)
+    }
+    
+    // Play sound with each interval
     playEraseSound()
   }, 100)
 }
@@ -156,7 +181,7 @@ onMounted(() => {
   document.body.classList.add('hide-cursor')
   gsap.set(cursor.value, { opacity: 0 })
 
-  setupCanvas(canvas.value)
+
   // Initialize audio
   createAudio()
 
@@ -212,7 +237,7 @@ STYLE
 .cursor span {
   box-sizing: border-box;
   position: absolute;
-  top: 40px;
+  top: 120px;
   left: 40px;
   width: auto;
   white-space: nowrap;
@@ -240,6 +265,13 @@ STYLE
   pointer-events: none;
   transform: translate(-50%, -50%);
   user-select: none;
+}
+.cursor img.mg {
+  width: 100px;
+  height: 100px;
+  top: 60px;
+  left: 50px;
+  mix-blend-mode: difference;
 }
 .test {
   user-select: none;
