@@ -223,7 +223,7 @@ const erase = (canvas, e) => {
   const randomScale = Math.random() * 0.5 + 0.8
 
   // Small circle parameters
-  const smallRadius = 4 // Make it 40% the size of base circle
+  const smallRadius = 3 // Make it 40% the size of base circle
   const deviationX = (Math.random() * 300 ) - 150 // Random deviation between -150 and +150
   const deviationY = (Math.random() * 300) - 150 // Random deviation between -150 and +150
   
