@@ -160,7 +160,7 @@ const handleMouseUp = () => {
     duration: 0.1,
   })
   gsap.to(cursorText.value, {
-    innerText: 'this is cool',
+    innerText: 'subvertir mi existencia',
   })
 
   // Clear the interval to stop playing sounds
