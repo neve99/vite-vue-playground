@@ -15,8 +15,12 @@ TEMPLATE
 <template>
   <div class="cursor" ref="cursor">
     <div class="cursor-circle" ref="cursorCircle"></div>
-    <img src="/cross100.svg" />
-    <img src="/images/mg-pov.png" class="mg">
+    <!-- <img src="/cross100.svg" class="cross"/> -->
+    <div class="cross-ctn">
+      <div class="horizontal"></div>
+      <div class="vertical"></div>
+    </div>
+    <img src="/images/mg-pov.png" class="mg" ref="mg">
     <span class="cursor-text" ref="cursorText">this is cool</span>
   </div>
   <h1 class="test">Scratch me</h1>
@@ -46,6 +50,7 @@ const audio = ref(null)
 const soundInterval = ref(null)
 const lastPosition = ref({ x: 0, y: 0 })
 const canDraw = ref(true)
+const mg = ref(null)
 
 const handleMouseMove = (e) => {
   if (!fadeInTrigger.value) {
@@ -75,10 +80,7 @@ const handleMouseDown = (e) => {
 
   isMouseDown.value = true
 
-  gsap.to(cursorCircle.value, {
-    scale: 5.5,
-    duration: 0.1,
-  })
+  
   gsap.to(cursorText.value, {
     innerText: 'release me plz',
   })
@@ -88,8 +90,37 @@ const handleMouseDown = (e) => {
   erase(canvas.value, e)
   playEraseSound()
   
+  // Variables for managing our own timing
+  let lastTime = 0;
+  const interval = 100; // 100ms interval
+  let animationFrame;
+  
   // Set up interval for both sound and drawing
   soundInterval.value = setInterval(() => {
+    // Reset cursor scale first
+    gsap.set(cursorCircle.value, {
+      scale: 1
+    })
+    
+    // Then animate it growing
+    gsap.to(cursorCircle.value, {
+      scale: 15.5,
+      duration: 0.1,
+    })
+
+     // First reset the mg position
+    gsap.set(mg.value, {
+      x: 0,
+      y: 0
+    })
+    
+    // Then animate mg to move back 50px in both x and y directions
+    gsap.to(mg.value, {
+      x: 20, // Use negative value to move back in x direction
+      y: 20, // Use negative value to move back in y direction
+      duration: 0.1,
+    })
+
     // Enable drawing for the next move event
     canDraw.value = true
     
@@ -104,7 +135,7 @@ const handleMouseDown = (e) => {
     
     // Play sound with each interval
     playEraseSound()
-  }, 100)
+  }, 250)
 }
 
 const handleMouseUp = () => {
@@ -272,6 +303,33 @@ STYLE
   top: 60px;
   left: 50px;
   mix-blend-mode: difference;
+}
+.cursor img.cross {
+  
+  mix-blend-mode: difference;
+}
+.cross-ctn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.horizontal{
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  background-color: white;
+}
+.vertical{
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  background-color: white;
 }
 .test {
   user-select: none;
