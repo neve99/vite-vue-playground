@@ -23,7 +23,7 @@ TEMPLATE
     <img src="/images/mg-pov.png" class="mg" ref="mg">
     <span class="cursor-text" ref="cursorText">it's cold outside</span>
   </div>
-  <h1 class="test">I'm free</h1>
+  <h1 class="test" v-show="hasClicked">I'm free</h1>
   
   <section class="scratched-in">
     <canvas class="in" ref="canvas"></canvas>
@@ -51,6 +51,7 @@ const soundInterval = ref(null)
 const lastPosition = ref({ x: 0, y: 0 })
 const canDraw = ref(true)
 const mg = ref(null)
+const hasClicked = ref(false)
 
 const handleMouseMove = (e) => {
   if (!fadeInTrigger.value) {
@@ -77,7 +78,7 @@ const handleMouseMove = (e) => {
 }
 
 const handleMouseDown = (e) => {
-
+  hasClicked.value = true
   isMouseDown.value = true
 
   
