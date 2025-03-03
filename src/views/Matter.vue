@@ -1,11 +1,11 @@
 <template>
   <div class="matter-page">
-    <h1>Matter.js Physics Playground</h1>
-    <div class="controls">
+
+    <!-- <div class="controls">
       <button @click="addCircle">Add Circle</button>
       <button @click="addRectangle">Add Rectangle</button>
       <button @click="resetWorld">Reset</button>
-    </div>
+    </div> -->
     <div id="matter-container" ref="matterContainer"></div>
   </div>
 </template>
@@ -21,9 +21,10 @@ let render = null;
 let runner = null;
 let world = null;
 
-// Module aliases
+// Module aliases (const Engine = Matter.Engine, etc.)
 const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
-
+const w = window.innerWidth;
+const h = window.innerHeight;
 // Initialize physics simulation
 onMounted(() => {
   // Create engine
@@ -35,10 +36,12 @@ onMounted(() => {
     element: matterContainer.value,
     engine: engine,
     options: {
-      width: window.innerWidth > 800 ? 800 : window.innerWidth - 40,
-      height: 600,
+      width: w,
+      height: h,
       wireframes: false,
-      background: '#f4f4f8'
+      // background: '#f4f4f8'
+      background: 'transparent',
+      pixelRatio: window.devicePixelRatio,
     }
   });
   
@@ -209,18 +212,15 @@ const resetWorld = () => {
 </script>
 
 <style scoped>
+
   .matter-page {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+
     max-width: 100%;
     overflow-x: hidden;
-  }
 
-  h1 {
-    margin-bottom: 20px;
-    color: #2e2b44;
   }
 
   .controls {
@@ -249,12 +249,13 @@ const resetWorld = () => {
   }
 
   #matter-container {
-    width: 800px;
+    /* width: 800px;
     max-width: calc(100vw - 40px);
     height: 600px;
     border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden; */
+    background-color: none;
+
   }
 
   @media (max-width: 840px) {

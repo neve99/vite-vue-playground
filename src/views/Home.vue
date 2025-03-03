@@ -28,9 +28,8 @@ import { gsap } from 'gsap'
     flex-direction: column;
     justify-content: space-around;
     align-items: start;
-
-
   }
+
   a {
     font-size: 16px;
     font-weight: 600;
