@@ -13,6 +13,10 @@ const routes = [
   {
     path: '/snow',
     component: () => import('../views/SnowScraping.vue'),
+  },
+  {
+    path: '/matter',
+    component: () => import('../views/Matter.vue'),
   }
 ]
 
