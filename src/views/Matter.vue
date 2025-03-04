@@ -53,39 +53,45 @@ onMounted(() => {
   // Create walls
   const ground = Bodies.rectangle(width/2, height + wallThickness/2, width + wallThickness, wallThickness, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44' } 
+    render: { fillStyle: '#2e2b44', visible: false } 
   });
   const ceiling = Bodies.rectangle(width/2, -wallThickness/2, width + wallThickness, wallThickness, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44' } 
+    render: { fillStyle: '#2e2b44', visible: false } 
   });
   const leftWall = Bodies.rectangle(-wallThickness/2, height/2, wallThickness, height, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44' } 
+    render: { fillStyle: '#2e2b44', visible: false } 
   });
   const rightWall = Bodies.rectangle(width + wallThickness/2, height/2, wallThickness, height, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44' } 
+    render: { fillStyle: '#2e2b44', visible: false } 
   });
   
   // Add initial bodies
-  const circle1 = Bodies.circle(200, 50, 30, {
+  const circle1 = Bodies.circle(20 + w/2, 50, 30, {
     restitution: 0.8,
     render: { fillStyle: '#ff6b6b' }
   });
   
-  const rect1 = Bodies.rectangle(400, 200, 60, 60, {
+  const rect1 = Bodies.rectangle(w/2 + 100, 200, 60, 60, {
     render: { fillStyle: '#48dbfb' }
   });
   
-  const poly1 = Bodies.polygon(300, 100, 5, 40, {
+  const poly1 = Bodies.polygon(w/2 - 100, 100, 12, 40, {
     render: { fillStyle: '#1dd1a1' }
+  });
+
+  const bigBall = Bodies.circle(w/2, h/2, 300, {
+    isStatic: true,
+    render: { fillStyle: '#ff6b6b' }
   });
   
   // Add all bodies to the world
   Composite.add(world, [
     ground, ceiling, leftWall, rightWall,
-    circle1, rect1, poly1
+    circle1, rect1, poly1,
+    bigBall
   ]);
   
   // Add mouse control
@@ -105,19 +111,23 @@ onMounted(() => {
   
   // Handle window resize
   window.addEventListener('resize', () => {
-    if (window.innerWidth > 800) {
+    /* if (window.innerWidth > 800) {
       render.options.width = 800;
     } else {
       render.options.width = window.innerWidth - 40;
     }
-    render.options.height = 600;
-    
+    render.options.height = 600; */
+    render.options.width = window.innerWidth
     // Update renderer
     Render.setPixelRatio(render, window.devicePixelRatio);
     Render.lookAt(render, {
       min: { x: 0, y: 0 },
       max: { x: render.options.width, y: render.options.height }
     });
+
+  });
+  document.addEventListener('click', (e) => {
+    createShape(e.clientX, e.clientY);
   });
   
   // Run the engine and renderer
@@ -127,6 +137,8 @@ onMounted(() => {
   
   // Add a touch of gravity
   engine.gravity.y = 1;
+
+  
 });
 
 // Clean up on component unmount
@@ -162,7 +174,18 @@ const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// Add shapes functions
+// Add shapes functions /////////////////////////////////////////////
+/* 
+ ________  ________  ________          ________  ___  ___  ________  ________  _______   ________      
+|\   __  \|\   ___ \|\   ___ \        |\   ____\|\  \|\  \|\   __  \|\   __  \|\  ___ \ |\   ____\     
+\ \  \|\  \ \  \_|\ \ \  \_|\ \       \ \  \___|\ \  \\\  \ \  \|\  \ \  \|\  \ \   __/|\ \  \___|_    
+ \ \   __  \ \  \ \\ \ \  \ \\ \       \ \_____  \ \   __  \ \   __  \ \   ____\ \  \_|/_\ \_____  \   
+  \ \  \ \  \ \  \_\\ \ \  \_\\ \       \|____|\  \ \  \ \  \ \  \ \  \ \  \___|\ \  \_|\ \|____|\  \  
+   \ \__\ \__\ \_______\ \_______\        ____\_\  \ \__\ \__\ \__\ \__\ \__\    \ \_______\____\_\  \ 
+    \|__|\|__|\|_______|\|_______|       |\_________\|__|\|__|\|__|\|__|\|__|     \|_______|\_________\
+                                          \|_________|                                      \|_________|
+*/
+
 const addCircle = () => {
   if (!world) return;
   
@@ -209,6 +232,16 @@ const resetWorld = () => {
     }
   });
 };
+
+const createShape = (x, y) => {
+  if (!world) return;
+  
+  const shape = Bodies.circle(x, y, 20 + 20 * Math.random(), {
+    render: { fillStyle: getRandomColor() }
+  });
+  
+  Composite.add(world, shape);
+}
 </script>
 
 <style scoped>
@@ -258,9 +291,9 @@ const resetWorld = () => {
 
   }
 
-  @media (max-width: 840px) {
+  /* @media (max-width: 840px) {
     #matter-container {
       width: calc(100vw - 40px);
     }
-  }
+  } */
 </style>
