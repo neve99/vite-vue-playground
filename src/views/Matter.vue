@@ -22,7 +22,7 @@ let runner = null;
 let world = null;
 
 // Module aliases (const Engine = Matter.Engine, etc.)
-const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
+const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events, Composites } = Matter;
 const w = window.innerWidth;
 const h = window.innerHeight;
 // Initialize physics simulation
@@ -53,23 +53,23 @@ onMounted(() => {
   // Create walls
   const ground = Bodies.rectangle(width/2, height + wallThickness/2, width + wallThickness, wallThickness, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44', visible: false } 
+    render: { fillStyle: '#2e2b44',  } 
   });
-  const ceiling = Bodies.rectangle(width/2, -wallThickness/2, width + wallThickness, wallThickness, { 
+  const ceiling = Bodies.rectangle(width/2, -wallThickness/2 - 2000, width + wallThickness, wallThickness, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44', visible: false } 
+    render: { fillStyle: '#2e2b44',  } 
   });
   const leftWall = Bodies.rectangle(-wallThickness/2, height/2, wallThickness, height, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44', visible: false } 
+    render: { fillStyle: '#2e2b44',  } 
   });
   const rightWall = Bodies.rectangle(width + wallThickness/2, height/2, wallThickness, height, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44', visible: false } 
+    render: { fillStyle: '#2e2b44',  } 
   });
   
   // Add initial bodies
-  const circle1 = Bodies.circle(20 + w/2, 50, 30, {
+  /* const circle1 = Bodies.circle(20 + w/2, 50, 30, {
     restitution: 0.8,
     render: { fillStyle: '#ff6b6b' }
   });
@@ -86,12 +86,28 @@ onMounted(() => {
     isStatic: true,
     render: { fillStyle: '#ff6b6b' }
   });
+
+  const initialShape = Composites.stack(50, 50, 5, 1, 400, 400, (x, y) => {
+    createShape(x, y);
+  }); */
+  const battery = Bodies.rectangle(w/2, -400, 575 * .4, 1555 * .4, {
+    restitution: 0.7,
+    render: { 
+      // fillStyle: getRandomColor() 
+      sprite: {
+        texture: '/images/matter/battery-547x1555.png',
+        xScale: 0.4,
+        yScale: 0.4
+      }
+    }
+  });
   
   // Add all bodies to the world
   Composite.add(world, [
     ground, ceiling, leftWall, rightWall,
-    circle1, rect1, poly1,
-    bigBall
+    // circle1, rect1, poly1, bigBall,
+    battery,
+
   ]);
   
   // Add mouse control
@@ -127,7 +143,7 @@ onMounted(() => {
 
   });
   document.addEventListener('click', (e) => {
-    createShape(e.clientX, e.clientY);
+    // createShape(e.clientX, e.clientY);
   });
   
   // Run the engine and renderer
@@ -136,7 +152,7 @@ onMounted(() => {
   Runner.run(runner, engine);
   
   // Add a touch of gravity
-  engine.gravity.y = 1;
+  engine.gravity.y = 1.5;
 
   
 });
@@ -236,8 +252,16 @@ const resetWorld = () => {
 const createShape = (x, y) => {
   if (!world) return;
   
-  const shape = Bodies.circle(x, y, 20 + 20 * Math.random(), {
-    render: { fillStyle: getRandomColor() }
+  // const shape = Bodies.circle(x, y, 200 + 20 * Math.random(),
+  const shape = Bodies.rectangle(x, y, 895 / 2 , 747 / 2, {
+    render: { 
+      // fillStyle: getRandomColor() 
+      sprite: {
+        texture: '/images/asset1.png',
+        xScale: 0.5,
+        yScale: 0.5
+      }
+    }
   });
   
   Composite.add(world, shape);
@@ -253,6 +277,7 @@ const createShape = (x, y) => {
 
     max-width: 100%;
     overflow-x: hidden;
+    background-color: #e6e6e6;
 
   }
 
