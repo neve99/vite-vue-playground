@@ -6,6 +6,9 @@
       <button @click="addRectangle">Add Rectangle</button>
       <button @click="resetWorld">Reset</button>
     </div> -->
+    <div class="somet-pic">
+      <img src="/images/matter/somet-1510x307.png" alt="">
+    </div>
     <div id="matter-container" ref="matterContainer"></div>
   </div>
 </template>
@@ -25,6 +28,16 @@ let world = null;
 const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events, Composites } = Matter;
 const w = window.innerWidth;
 const h = window.innerHeight;
+
+// get responsive scale based on window size
+const getResponsiveScale = () => {
+  const baseScale = 0.6;
+  const referenceWidth = 1920;
+  const scaleFactor = Math.min(window.innerWidth / referenceWidth, 1);
+  return Math.max(0.25, Math.min(baseScale * scaleFactor, 0.6));
+}
+
+const scale = ref(getResponsiveScale());
 // Initialize physics simulation
 onMounted(() => {
   // Create engine
@@ -50,22 +63,24 @@ onMounted(() => {
   const width = render.options.width;
   const height = render.options.height;
   
+  const extraHeight = 2000;
   // Create walls
   const ground = Bodies.rectangle(width/2, height + wallThickness/2, width + wallThickness, wallThickness, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44',  } 
+    render: { fillStyle: '#2e2b44', visible: false } 
   });
-  const ceiling = Bodies.rectangle(width/2, -wallThickness/2 - 2000, width + wallThickness, wallThickness, { 
+  const ceiling = Bodies.rectangle(width/2, -wallThickness/2 - extraHeight, width + wallThickness, wallThickness, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44',  } 
+    render: { fillStyle: '#2e2b44', visible: false } 
   });
-  const leftWall = Bodies.rectangle(-wallThickness/2, height/2, wallThickness, height, { 
+  const leftWall = Bodies.rectangle(-wallThickness/2, (height - extraHeight)/2, wallThickness, height + extraHeight, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44',  } 
+    render: { fillStyle: '#2e2b44',  visible: false} 
   });
-  const rightWall = Bodies.rectangle(width + wallThickness/2, height/2, wallThickness, height, { 
+  const rightWall = Bodies.rectangle(width + wallThickness/2, (height - extraHeight)/2, wallThickness, height + extraHeight, { 
     isStatic: true,
-    render: { fillStyle: '#2e2b44',  } 
+
+    render: { fillStyle: '#2e2b44', visible: false,} 
   });
   
   // Add initial bodies
@@ -90,23 +105,110 @@ onMounted(() => {
   const initialShape = Composites.stack(50, 50, 5, 1, 400, 400, (x, y) => {
     createShape(x, y);
   }); */
-  const battery = Bodies.rectangle(w/2, -400, 575 * .4, 1555 * .4, {
+
+
+  const battery = Bodies.rectangle(w/2, -400, 575 * scale.value, 1555 * scale.value, {
     restitution: 0.7,
+    angle: Math.PI / 24,
     render: { 
       // fillStyle: getRandomColor() 
+
       sprite: {
         texture: '/images/matter/battery-547x1555.png',
-        xScale: 0.4,
-        yScale: 0.4
+        xScale: scale.value,
+        yScale: scale.value
       }
     }
   });
-  
+  const harddrive1 = Bodies.rectangle(w/2, -400, 639 * scale.value, 891 * scale.value, {
+    restitution: 0.7,
+    angle: - Math.PI / 24,
+    render: { 
+      // fillStyle: getRandomColor(),
+      sprite: {
+        texture: '/images/matter/harddrive-blue-639x891.png',
+        xScale: scale.value,
+        yScale: scale.value
+      }
+    }
+  });
+  const harddrive2 = Bodies.rectangle(w/2 - 100, -400, 639 * scale.value, 891 * scale.value, {
+    restitution: 0.7,
+    angle:  Math.PI / 24,
+    render: { 
+      // fillStyle: getRandomColor(),
+      sprite: {
+        texture: '/images/matter/harddrive-white-639x891.png',
+        xScale: scale.value,
+        yScale: scale.value
+      }
+    }
+  });
+  const print1 = Bodies.rectangle(w/2, -400, 895 * scale.value, 747 * scale.value, {
+    restitution: 0.7,
+    angle:  Math.PI / 24,
+    render: { 
+      // fillStyle: getRandomColor(),
+      sprite: {
+        texture: '/images/matter/print-blue-895x747.png',
+        xScale: scale.value,
+        yScale: scale.value
+      }
+    }
+  });
+  const print2 = Bodies.rectangle(w/2 + 50, -400, 895 * scale.value, 747 * scale.value, {
+    restitution: 0.7,
+    angle:  Math.PI / 15,
+    render: { 
+      // fillStyle: getRandomColor(),
+      sprite: {
+        texture: '/images/matter/print-red-895x747.png',
+        xScale: scale.value,
+        yScale: scale.value
+      }
+    }
+  });
+  const print3 = Bodies.rectangle(w/2 - 500, -400, 895 * scale.value, 747 * scale.value, {
+    restitution: 0.7,
+    angle:  Math.PI / 12,
+    render: { 
+      // fillStyle: getRandomColor(),
+      sprite: {
+        texture: '/images/matter/print-white-895x747.png',
+        xScale: scale.value,
+        yScale: scale.value
+      }
+    }
+  });
+  const somet = Bodies.rectangle(w/2, 500, 1510 * scale.value, 307 * scale.value, {
+    restitution: 0.7,
+    angle:  Math.PI/10 ,
+    render: { 
+      // fillStyle: getRandomColor(),
+      sprite: {
+        texture: '/images/matter/somet-1510x307.png',
+        xScale: scale.value,
+        yScale: scale.value
+      }
+    }
+  });
+  const sum = Bodies.rectangle(w/2, -50, 2050 * scale.value * .2, 2050 * scale.value * .2, {
+    restitution: 0.7,
+    angle:  Math.PI/10 ,
+    render: { 
+      // fillStyle: getRandomColor(),
+      sprite: {
+        texture: '/images/matter/sum-2050x2050.png',
+        xScale: scale.value * .2,
+        yScale: scale.value * .2
+      }
+    }
+  });
   // Add all bodies to the world
   Composite.add(world, [
     ground, ceiling, leftWall, rightWall,
     // circle1, rect1, poly1, bigBall,
-    battery,
+    battery, harddrive2, print2, print3, sum
 
   ]);
   
@@ -125,6 +227,8 @@ onMounted(() => {
   // Keep the mouse in sync with rendering
   render.mouse = mouse;
   
+  // Handle window resize with debounce
+  let resizeTimeout;
   // Handle window resize
   window.addEventListener('resize', () => {
     /* if (window.innerWidth > 800) {
@@ -140,6 +244,11 @@ onMounted(() => {
       min: { x: 0, y: 0 },
       max: { x: render.options.width, y: render.options.height }
     });
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      // Reload the entire page
+      window.location.reload();
+    }, 500); // 500ms debounce to prevent multiple reloads during resize
 
   });
   document.addEventListener('click', (e) => {
@@ -306,6 +415,20 @@ const createShape = (x, y) => {
     transform: scale(0.97);
   }
 
+  .somet-pic {
+    position: fixed;
+    /* top: 10vh; */
+    top: 0;
+    left: 20px;
+    width: 30vw;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    z-index: 0.5;
+  }
+  .somet-pic img {
+    width: 100%;
+  }
+
   #matter-container {
     /* width: 800px;
     max-width: calc(100vw - 40px);
@@ -313,7 +436,7 @@ const createShape = (x, y) => {
     border-radius: 8px;
     overflow: hidden; */
     background-color: none;
-
+    z-index: 1;
   }
 
   /* @media (max-width: 840px) {
