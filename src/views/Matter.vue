@@ -45,6 +45,11 @@ const handleDeviceOrientation = (event) => {
   const beta = event.beta;  // -180 to 180 (front to back)
   const gamma = event.gamma; // -90 to 90 (left to right)
   
+  // Debug raw values first
+  if (window.debugDiv) {
+    window.debugDiv.textContent = `Orientation: beta=${beta?.toFixed(2) || 'null'}, gamma=${gamma?.toFixed(2) || 'null'}`;
+  }
+
   // Convert orientation to gravity direction
   // Limit the maximum gravity strength
   const maxGravity = 2.0;
@@ -316,70 +321,8 @@ onMounted(() => {
   // Add flag to check if running on mobile
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
-  if (isMobile) {
-    console.log('Mobile device detected, enabling tilt controls');
-  
-    // Create a simple debug display
-    const debugDiv = document.createElement('div');
-    debugDiv.style.position = 'fixed';
-    debugDiv.style.top = '10px';
-    debugDiv.style.left = '10px';
-    debugDiv.style.background = 'rgba(0,0,0,0.5)';
-    debugDiv.style.color = 'white';
-    debugDiv.style.padding = '5px';
-    debugDiv.style.fontSize = '12px';
-    debugDiv.style.zIndex = '1000';
-    document.body.appendChild(debugDiv);
-    
-    // Update debug info
-    setInterval(() => {
-      debugDiv.textContent = `Gravity: x=${engine.gravity.x.toFixed(2)}, y=${engine.gravity.y.toFixed(2)}`;
-    }, 100);
-
-      // Check if device orientation/motion is available and add listeners
-    if (window.DeviceOrientationEvent) {
-      // Request permission for iOS 13+ devices
-      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        // Add a button to request permission
-        const permissionBtn = document.createElement('button');
-        permissionBtn.innerText = 'Enable Tilt Controls';
-        permissionBtn.className = 'permission-btn';
-        document.body.appendChild(permissionBtn);
-        
-        permissionBtn.addEventListener('click', () => {
-          DeviceOrientationEvent.requestPermission()
-            .then(response => {
-              if (response === 'granted') {
-                window.addEventListener('deviceorientation', handleDeviceOrientation);
-                permissionBtn.style.display = 'none';
-              }
-            })
-            .catch(console.error);
-        });
-      } else {
-        // Non-iOS or older iOS - no permission needed
-        window.addEventListener('deviceorientation', handleDeviceOrientation);
-      }
-    }
-    
-    // Use device motion as fallback or additional input
-    if (window.DeviceMotionEvent) {
-      if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        // Permission already requested with deviceorientation
-        DeviceMotionEvent.requestPermission()
-          .then(response => {
-            if (response === 'granted') {
-              window.addEventListener('devicemotion', handleDeviceMotion);
-            }
-          })
-          .catch(() => {
-            // Permission handling failed, fallback to deviceorientation only
-          });
-      } else {
-        window.addEventListener('devicemotion', handleDeviceMotion);
-      }
-    }
-  } else {
+  if (isMobile) {}
+  else {
     // Ensure gravity is set for desktop
     engine.gravity.y = 1.5;
     engine.gravity.x = 0;

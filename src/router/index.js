@@ -17,7 +17,7 @@ const routes = [
   {
     path: '/matter',
     component: () => import('../views/Matter.vue'),
-  }
+  },
 ]
 
 const router = createRouter({

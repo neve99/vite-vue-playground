@@ -10,4 +10,8 @@ export default defineConfig({
     }
   },
   plugins: [vue()],
+  server: {
+    host: '0.0.0.0',  // Add this to expose to all network interfaces
+    port: 5173        // Optional: specify port explicitly
+  }
 })
