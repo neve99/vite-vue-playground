@@ -37,54 +37,22 @@ const getResponsiveScale = () => {
   return Math.max(0.25, Math.min(baseScale * scaleFactor, 0.6));
 }
 
-// Function to handle device orientation changes
-const handleDeviceOrientation = (event) => {
-  if (!engine) return;
-  
-  // Get orientation data (beta is front-to-back tilt, gamma is left-to-right tilt)
-  const beta = event.beta;  // -180 to 180 (front to back)
-  const gamma = event.gamma; // -90 to 90 (left to right)
-  
-  // Debug raw values first
-  if (window.debugDiv) {
-    window.debugDiv.textContent = `Orientation: beta=${beta?.toFixed(2) || 'null'}, gamma=${gamma?.toFixed(2) || 'null'}`;
-  }
-
-  // Convert orientation to gravity direction
-  // Limit the maximum gravity strength
-  const maxGravity = 2.0;
-  
-  if (beta !== null && gamma !== null) {
-    // Normalize and scale beta and gamma to reasonable gravity values
-    // Dividing by 45 means at 45 degrees tilt, we get maximum gravity
-    const gravityX = Math.min(maxGravity, Math.max(-maxGravity, gamma / 45)) * -1;
-    const gravityY = Math.min(maxGravity, Math.max(-maxGravity, beta / 45));
-    
-    // Update the engine gravity
-    engine.gravity.x = gravityX;
-    engine.gravity.y = gravityY;
-  }
-};
-
-// Function to handle device motion (accelerometer)
-const handleDeviceMotion = (event) => {
-  if (!engine) return;
-  
-  // Get acceleration data, including gravity
-  const accelerationGravity = event.accelerationIncludingGravity;
-  
-  if (accelerationGravity) {
-    // Scale the values appropriately
-    const scaleFactor = 0.05;  // Adjust as needed for sensitivity
-    
-    // Set gravity based on acceleration values
-    // We negate x because device orientation is opposite to what we expect
-    engine.gravity.x = -accelerationGravity.x * scaleFactor;
-    engine.gravity.y = accelerationGravity.y * scaleFactor;
-  }
-};
-
 const scale = ref(getResponsiveScale());
+
+// Handle device orientation
+const handleDeviceOrientation = (event) => {
+  
+  if (event && event.beta !== null) {
+    // Use beta (front-back tilt) directly as gravity.x for testing
+    engine.gravity.x = event.beta / 45; // Scale to make effect reasonable
+    
+    console.log(`Beta: ${event.beta.toFixed(2)}, Gravity X: ${engine.gravity.x.toFixed(2)}`);
+  }
+
+};
+
+
+
 // Initialize physics simulation
 onMounted(() => {
   // Create engine
@@ -321,8 +289,85 @@ onMounted(() => {
   // Add flag to check if running on mobile
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
-  if (isMobile) {}
-  else {
+  if (isMobile) {
+    // Create a simple button for iOS permission
+  const permissionButton = document.createElement('button');
+  permissionButton.innerText = 'Enable Tilt Controls';
+  permissionButton.style.position = 'fixed';
+  permissionButton.style.top = '50%';
+  permissionButton.style.left = '50%';
+  permissionButton.style.transform = 'translate(-50%, -50%)';
+  permissionButton.style.padding = '15px 20px';
+  permissionButton.style.backgroundColor = '#54a0ff';
+  permissionButton.style.color = 'white';
+  permissionButton.style.border = 'none';
+  permissionButton.style.borderRadius = '8px';
+  permissionButton.style.zIndex = '2000';
+  document.body.appendChild(permissionButton);
+  
+  permissionButton.addEventListener('click', () => {
+    // Check if we need to request permission (iOS 13+)
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(response => {
+          if (response === 'granted') {
+            window.addEventListener('deviceorientation', handleDeviceOrientation);
+            permissionButton.style.display = 'none';
+            console.log('Permission granted!');
+            
+            // Add a debug display
+            const debugDiv = document.createElement('div');
+            debugDiv.style.position = 'fixed';
+            debugDiv.style.top = '10px';
+            debugDiv.style.left = '10px';
+            debugDiv.style.background = 'rgba(0,0,0,0.7)';
+            debugDiv.style.color = 'white';
+            debugDiv.style.padding = '5px';
+            debugDiv.style.borderRadius = '5px';
+            debugDiv.style.zIndex = '1000';
+            document.body.appendChild(debugDiv);
+            
+            // Update debug info every 100ms
+            setInterval(() => {
+              debugDiv.textContent = `Gravity: x=${engine.gravity.x.toFixed(2)}, y=${engine.gravity.y.toFixed(2)}`;
+            }, 100);
+          } else {
+            console.log('Permission denied');
+            permissionButton.innerText = 'Permission Denied';
+            permissionButton.style.backgroundColor = '#ff4757';
+          }
+        })
+        .catch(err => {
+          console.error('Error requesting device orientation permission:', err);
+          permissionButton.innerText = 'Error: ' + err.message;
+          permissionButton.style.backgroundColor = '#ff4757';
+        });
+    } else {
+      // Non-iOS devices don't need permission
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+      permissionButton.style.display = 'none';
+      console.log('No permission needed, event listener added');
+      
+      // Add debug display for non-iOS too
+      const debugDiv = document.createElement('div');
+      debugDiv.style.position = 'fixed';
+      debugDiv.style.top = '10px';
+      debugDiv.style.left = '10px';
+      debugDiv.style.background = 'rgba(0,0,0,0.7)';
+      debugDiv.style.color = 'white';
+      debugDiv.style.padding = '5px';
+      debugDiv.style.borderRadius = '5px';
+      debugDiv.style.zIndex = '1000';
+      document.body.appendChild(debugDiv);
+      
+      setInterval(() => {
+        debugDiv.textContent = `Gravity: x=${engine.gravity.x.toFixed(2)}, y=${engine.gravity.y.toFixed(2)}`;
+      }, 100);
+    }
+  });
+
+
+  } else {
     // Ensure gravity is set for desktop
     engine.gravity.y = 1.5;
     engine.gravity.x = 0;
