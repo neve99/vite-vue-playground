@@ -42,13 +42,36 @@ const scale = ref(getResponsiveScale());
 // Handle device orientation
 const handleDeviceOrientation = (event) => {
   
+  // Add these at the top of your script with other variables
+let currentGravityX = 0;
+let currentGravityY = 1.5;
+const smoothingFactor = 0.2; // Lower = smoother but less responsive
+
+// Updated handler with smoothing
+const handleDeviceOrientation = (event) => {
   if (!event || !engine) return;
   
   const gamma = event.gamma; // Left-to-right tilt (-90 to 90)
   const beta = event.beta;   // Front-to-back tilt (-180 to 180)
   
-  engine.world.gravity.x = gamma / 30;
-  engine.world.gravity.y = beta / 30;
+  if (beta !== null && gamma !== null) {
+    // Calculate target gravity
+    const maxGravity = 2.0;
+    const targetX = Math.min(maxGravity, Math.max(-maxGravity, gamma / 30)) * -1;
+    
+    // Normalize beta by subtracting typical holding angle
+    const normalizedBeta = beta - 45;
+    const targetY = Math.min(maxGravity, Math.max(-maxGravity, normalizedBeta / 30));
+    
+    // Apply smoothing
+    currentGravityX = currentGravityX + (targetX - currentGravityX) * smoothingFactor;
+    currentGravityY = currentGravityY + (targetY - currentGravityY) * smoothingFactor;
+    
+    // Update engine gravity
+    engine.world.gravity.x = currentGravityX;
+    engine.world.gravity.y = currentGravityY;
+  }
+};
 
 };
 
