@@ -47,27 +47,8 @@ const handleDeviceOrientation = (event) => {
   const gamma = event.gamma; // Left-to-right tilt (-90 to 90)
   const beta = event.beta;   // Front-to-back tilt (-180 to 180)
   
-  if (beta !== null && gamma !== null) {
-    // Normalize and limit gravity values
-    const maxGravity = 2.0;
-    
-    // Use gamma (side-to-side tilt) for horizontal gravity
-    // Negative value to make tilt direction match gravity direction
-    const gravityX = Math.min(maxGravity, Math.max(-maxGravity, gamma / 30)) * -1;
-    
-    // Use beta (front-to-back tilt) for vertical gravity
-    // Subtract 45 degrees to calibrate for typical phone viewing angle
-    // (Most people hold phones tilted forward slightly)
-    const normalizedBeta = beta - 45;
-    const gravityY = Math.min(maxGravity, Math.max(-maxGravity, normalizedBeta / 30));
-    
-    // Apply to engine
-    engine.gravity.x = gravityX;
-    engine.gravity.y = gravityY;
-    
-    // Debug logging to see what's happening
-    console.log(`Orientation: beta=${beta.toFixed(1)}, gamma=${gamma.toFixed(1)} | Gravity: x=${gravityX.toFixed(2)}, y=${gravityY.toFixed(2)}`);
-  }
+  engine.world.gravity.x = gamma / 30;
+  engine.world.gravity.y = beta / 30;
 
 };
 
