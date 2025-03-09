@@ -342,7 +342,8 @@ onMounted(() => {
             console.log('Permission granted!');
             
             // Add a debug display
-            /* const debugDiv = document.createElement('div');
+            const debugDiv = document.createElement('div');
+            debugDiv.style.display = 'none';
             debugDiv.style.position = 'fixed';
             debugDiv.style.top = '10px';
             debugDiv.style.left = '10px';
@@ -351,12 +352,12 @@ onMounted(() => {
             debugDiv.style.padding = '5px';
             debugDiv.style.borderRadius = '5px';
             debugDiv.style.zIndex = '1000';
-            document.body.appendChild(debugDiv); */
+            document.body.appendChild(debugDiv);
             
             // Update debug info every 100ms
-            /* setInterval(() => {
+            setInterval(() => {
               debugDiv.textContent = `Gravity: x=${engine.gravity.x.toFixed(2)}, y=${engine.gravity.y.toFixed(2)}`;
-            }, 100); */
+            }, 100);
           } else {
             console.log('Permission denied');
             permissionButton.innerText = 'Permission Denied';
@@ -375,7 +376,8 @@ onMounted(() => {
       console.log('No permission needed, event listener added');
       
       // Add debug display for non-iOS too
-      /* const debugDiv = document.createElement('div');
+      const debugDiv = document.createElement('div');
+      debugDiv.style.display = 'none';
       debugDiv.style.position = 'fixed';
       debugDiv.style.top = '10px';
       debugDiv.style.left = '10px';
@@ -388,7 +390,7 @@ onMounted(() => {
       
       setInterval(() => {
         debugDiv.textContent = `Gravity: x=${engine.gravity.x.toFixed(2)}, y=${engine.gravity.y.toFixed(2)}`;
-      }, 100); */
+      }, 100);
     }
   });
 
