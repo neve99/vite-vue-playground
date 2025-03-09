@@ -37,6 +37,48 @@ const getResponsiveScale = () => {
   return Math.max(0.25, Math.min(baseScale * scaleFactor, 0.6));
 }
 
+// Function to handle device orientation changes
+const handleDeviceOrientation = (event) => {
+  if (!engine) return;
+  
+  // Get orientation data (beta is front-to-back tilt, gamma is left-to-right tilt)
+  const beta = event.beta;  // -180 to 180 (front to back)
+  const gamma = event.gamma; // -90 to 90 (left to right)
+  
+  // Convert orientation to gravity direction
+  // Limit the maximum gravity strength
+  const maxGravity = 2.0;
+  
+  if (beta !== null && gamma !== null) {
+    // Normalize and scale beta and gamma to reasonable gravity values
+    // Dividing by 45 means at 45 degrees tilt, we get maximum gravity
+    const gravityX = Math.min(maxGravity, Math.max(-maxGravity, gamma / 45)) * -1;
+    const gravityY = Math.min(maxGravity, Math.max(-maxGravity, beta / 45));
+    
+    // Update the engine gravity
+    engine.gravity.x = gravityX;
+    engine.gravity.y = gravityY;
+  }
+};
+
+// Function to handle device motion (accelerometer)
+const handleDeviceMotion = (event) => {
+  if (!engine) return;
+  
+  // Get acceleration data, including gravity
+  const accelerationGravity = event.accelerationIncludingGravity;
+  
+  if (accelerationGravity) {
+    // Scale the values appropriately
+    const scaleFactor = 0.05;  // Adjust as needed for sensitivity
+    
+    // Set gravity based on acceleration values
+    // We negate x because device orientation is opposite to what we expect
+    engine.gravity.x = -accelerationGravity.x * scaleFactor;
+    engine.gravity.y = accelerationGravity.y * scaleFactor;
+  }
+};
+
 const scale = ref(getResponsiveScale());
 // Initialize physics simulation
 onMounted(() => {
@@ -260,8 +302,70 @@ onMounted(() => {
   runner = Runner.create();
   Runner.run(runner, engine);
   
+
   // Add a touch of gravity
+  // engine.gravity.y = 1.5;
+
+
+  
+  
+  // Set default gravity
   engine.gravity.y = 1.5;
+  engine.gravity.x = 0;
+  
+  // Add flag to check if running on mobile
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+      // Check if device orientation/motion is available and add listeners
+    if (window.DeviceOrientationEvent) {
+      // Request permission for iOS 13+ devices
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // Add a button to request permission
+        const permissionBtn = document.createElement('button');
+        permissionBtn.innerText = 'Enable Tilt Controls';
+        permissionBtn.className = 'permission-btn';
+        document.body.appendChild(permissionBtn);
+        
+        permissionBtn.addEventListener('click', () => {
+          DeviceOrientationEvent.requestPermission()
+            .then(response => {
+              if (response === 'granted') {
+                window.addEventListener('deviceorientation', handleDeviceOrientation);
+                permissionBtn.style.display = 'none';
+              }
+            })
+            .catch(console.error);
+        });
+      } else {
+        // Non-iOS or older iOS - no permission needed
+        window.addEventListener('deviceorientation', handleDeviceOrientation);
+      }
+    }
+    
+    // Use device motion as fallback or additional input
+    if (window.DeviceMotionEvent) {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        // Permission already requested with deviceorientation
+        DeviceMotionEvent.requestPermission()
+          .then(response => {
+            if (response === 'granted') {
+              window.addEventListener('devicemotion', handleDeviceMotion);
+            }
+          })
+          .catch(() => {
+            // Permission handling failed, fallback to deviceorientation only
+          });
+      } else {
+        window.addEventListener('devicemotion', handleDeviceMotion);
+      }
+    }
+  } else {
+    // Ensure gravity is set for desktop
+    engine.gravity.y = 1.5;
+    engine.gravity.x = 0;
+  }
+
 
   
 });
@@ -288,6 +392,11 @@ onUnmounted(() => {
   }
   
   world = null;
+
+  window.removeEventListener('resize', () => {});
+  document.removeEventListener('click', () => {});
+  window.removeEventListener('deviceorientation', handleDeviceOrientation);
+  window.removeEventListener('devicemotion', handleDeviceMotion);
 });
 
 // Helper functions
