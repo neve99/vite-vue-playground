@@ -317,6 +317,25 @@ onMounted(() => {
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
   if (isMobile) {
+    console.log('Mobile device detected, enabling tilt controls');
+  
+    // Create a simple debug display
+    const debugDiv = document.createElement('div');
+    debugDiv.style.position = 'fixed';
+    debugDiv.style.top = '10px';
+    debugDiv.style.left = '10px';
+    debugDiv.style.background = 'rgba(0,0,0,0.5)';
+    debugDiv.style.color = 'white';
+    debugDiv.style.padding = '5px';
+    debugDiv.style.fontSize = '12px';
+    debugDiv.style.zIndex = '1000';
+    document.body.appendChild(debugDiv);
+    
+    // Update debug info
+    setInterval(() => {
+      debugDiv.textContent = `Gravity: x=${engine.gravity.x.toFixed(2)}, y=${engine.gravity.y.toFixed(2)}`;
+    }, 100);
+
       // Check if device orientation/motion is available and add listeners
     if (window.DeviceOrientationEvent) {
       // Request permission for iOS 13+ devices
@@ -496,6 +515,10 @@ const createShape = (x, y) => {
     max-width: 100%;
     overflow-x: hidden;
     background-color: #e6e6e6;
+
+    position: fixed;
+    top: 0;
+    left: 0;
 
   }
 
