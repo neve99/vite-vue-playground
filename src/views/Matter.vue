@@ -42,11 +42,27 @@ const scale = ref(getResponsiveScale());
 // Handle device orientation
 const handleDeviceOrientation = (event) => {
   
-  if (event && event.beta !== null) {
-    // Use beta (front-back tilt) directly as gravity.x for testing
-    engine.gravity.x = event.beta / 45; // Scale to make effect reasonable
+  if (!event || !engine) return;
+  
+  const gamma = event.gamma; // Left-to-right tilt (-90 to 90)
+  const beta = event.beta;   // Front-to-back tilt (-180 to 180)
+  
+  if (beta !== null && gamma !== null) {
+    // Calculate target gravity
+    const maxGravity = 2.0;
+    const targetX = Math.min(maxGravity, Math.max(-maxGravity, gamma / 30)) * -1;
     
-    console.log(`Beta: ${event.beta.toFixed(2)}, Gravity X: ${engine.gravity.x.toFixed(2)}`);
+    // Normalize beta by subtracting typical holding angle
+    const normalizedBeta = beta - 45;
+    const targetY = Math.min(maxGravity, Math.max(-maxGravity, normalizedBeta / 30));
+    
+    // Apply smoothing
+    currentGravityX = currentGravityX + (targetX - currentGravityX) * smoothingFactor;
+    currentGravityY = currentGravityY + (targetY - currentGravityY) * smoothingFactor;
+    
+    // Update engine gravity
+    engine.gravity.x = currentGravityX;
+    engine.gravity.y = currentGravityY;
   }
 
 };
@@ -298,10 +314,12 @@ onMounted(() => {
   permissionButton.style.left = '50%';
   permissionButton.style.transform = 'translate(-50%, -50%)';
   permissionButton.style.padding = '15px 20px';
-  permissionButton.style.backgroundColor = '#54a0ff';
-  permissionButton.style.color = 'white';
-  permissionButton.style.border = 'none';
-  permissionButton.style.borderRadius = '8px';
+  permissionButton.style.backgroundColor = 'white';
+  permissionButton.style.color = 'black';
+  permissionButton.style.border = '2px solid #333'; 
+  permissionButton.style.borderRadius = '50px';
+  permissionButton.style.fontWeight = '600';
+  permissionButton.style.fontSize = '16px';
   permissionButton.style.zIndex = '2000';
   document.body.appendChild(permissionButton);
   
