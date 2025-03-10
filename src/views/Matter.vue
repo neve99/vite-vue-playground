@@ -343,6 +343,7 @@ onMounted(() => {
             
             // Add a debug display
             const debugDiv = document.createElement('div');
+            debugDiv.style.display = 'none';
             debugDiv.style.position = 'fixed';
             debugDiv.style.top = '10px';
             debugDiv.style.left = '10px';
@@ -376,6 +377,7 @@ onMounted(() => {
       
       // Add debug display for non-iOS too
       const debugDiv = document.createElement('div');
+      debugDiv.style.display = 'none';
       debugDiv.style.position = 'fixed';
       debugDiv.style.top = '10px';
       debugDiv.style.left = '10px';
