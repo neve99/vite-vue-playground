@@ -57,7 +57,7 @@ const handleDeviceOrientation = (event) => {
   if (beta !== null && gamma !== null) {
     // Calculate target gravity
     const maxGravity = 2.0;
-    const targetX = Math.min(maxGravity, Math.max(-maxGravity, gamma / 30)) * -1;
+    const targetX = Math.min(maxGravity, Math.max(-maxGravity, gamma / 30));
     
     // Normalize beta by subtracting typical holding angle
     const normalizedBeta = beta - 45;
