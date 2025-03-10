@@ -79,7 +79,12 @@ const handleDeviceOrientation = (event) => {
 // Initialize physics simulation
 onMounted(() => {
   // Create engine
-  engine = Engine.create();
+  engine = Engine.create(
+    {
+      positionIterations: 8,    // Default is 6
+      velocityIterations: 8     // Default is 4
+    }
+  );
   world = engine.world;
   
   // Create renderer
@@ -242,7 +247,7 @@ onMounted(() => {
     }
   });
   const sum = Bodies.rectangle(w/2, -50, 2050 * scale.value * .2, 2050 * scale.value * .2, {
-    restitution: 0.7,
+    restitution: 0.4,
     angle:  Math.PI/10 ,
     render: { 
       // fillStyle: getRandomColor(),
