@@ -444,7 +444,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', () => {});
   document.removeEventListener('click', () => {});
   window.removeEventListener('deviceorientation', handleDeviceOrientation);
-  window.removeEventListener('devicemotion', handleDeviceMotion);
 });
 
 // Helper functions
