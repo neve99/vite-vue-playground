@@ -40,7 +40,7 @@ const getResponsiveScale = () => {
 const scale = ref(getResponsiveScale());
 
 // Handle device orientation
-const handleDeviceOrientation = (event) => {
+
   
   // Add these at the top of your script with other variables
 let currentGravityX = 0;
@@ -73,7 +73,6 @@ const handleDeviceOrientation = (event) => {
   }
 };
 
-};
 
 
 
