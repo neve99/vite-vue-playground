@@ -111,6 +111,17 @@ onMounted(() => {
     isStatic: true,
     render: { fillStyle: '#2e2b44', visible: false } 
   });
+  // Add timer to move ceiling down after objects have fallen (3 seconds)
+  setTimeout(() => {
+    // Move ceiling to top of screen
+    Body.setPosition(ceiling, {
+      x: width/2,
+      y: -wallThickness/2  // Just at the top edge of the screen
+    });
+    
+    console.log('Ceiling moved to top of screen');
+  }, 3000); // 3000ms = 3 seconds
+  
   const leftWall = Bodies.rectangle(-wallThickness/2, (height - extraHeight)/2, wallThickness, height + extraHeight, { 
     isStatic: true,
     render: { fillStyle: '#2e2b44',  visible: false} 
