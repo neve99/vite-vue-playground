@@ -16,6 +16,7 @@ let scene, camera, renderer, controls, line;
 let animationFrameId; // For cleanup
 let shape
 
+const shapes = []
 
 // init three.js
 const initThree = () => {
@@ -30,8 +31,13 @@ const initThree = () => {
     0.1,
     5000
   );
-  camera.position.z = 50;
+  camera.position.z = -50;
   camera.lookAt(scene.position)
+
+  // light
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(0, 0, -1);
+  scene.add(light);
 
   // renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -43,7 +49,13 @@ const initThree = () => {
   threeContainer.value.appendChild(renderer.domElement);
   
   // create shape
-  createShape();
+  
+  // add event listener
+  window.addEventListener('click', (event) => {
+    const x = event.clientX
+    const y = event.clientY
+    createShape(x, y);
+  })
   
   // Start rendering
   animate();
@@ -64,22 +76,31 @@ const animate = () => {
     shape.rotation.y += 0.01;
   } */
 
+  shapes.forEach(shape => {
+    shape.rotation.x += 0.01
+  })
+
   renderer.render(scene, camera);
 }
 
 // create shape
-const createShape = () => {
+const createShape = (x, y) => {
   const geometry = new THREE.ConeGeometry(10, 30, 32)
-  const material = new THREE.MeshBasicMaterial({ 
-    color: 0xff0000,
-    wireframe: true
+  const material = new THREE.MeshLambertMaterial({ 
+    color: 0xffffff,
+    emissive: 0xff0000,
+    // wireframe: true
   }) 
   shape = new THREE.Mesh(geometry, material)
 
   // Position it slightly offset from center to ensure it's visible
-  shape.position.set(0, 0, 0);
-  
+  shape.position.set(window.innerWidth / 2 - x, window.innerHeight / 2 - y, 400);
+
+  // add it to the scene
   scene.add(shape)
+
+  // add it to the shapes array so we can rotate it
+  shapes.push(shape)
 }
 
 // handle resize
@@ -103,6 +124,7 @@ const cleanup = () => {
   }
 
   window.removeEventListener('resize', onResize);
+  window.removeEventListener('click', createShape);
 }
 
 onMounted(() => {
