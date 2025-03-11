@@ -11,9 +11,6 @@ import * as THREE from 'three';
 
 const threeContainer = ref(null);
 
-
-console.log('THREE loaded:', THREE);
-console.log('THREE.BoxGeometry exists:', !!THREE.BoxGeometry);
 // three.js variables
 let scene, camera, renderer, controls, line;
 let animationFrameId; // For cleanup
@@ -36,13 +33,6 @@ const initThree = () => {
   camera.position.z = 50;
   camera.lookAt(scene.position)
 
-  console.log("Camera position:", camera.position);
-  console.log("Camera looking at:", camera.getWorldDirection(new THREE.Vector3()));
-
-
-
-
-
   // renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(threeContainer.value.clientWidth, threeContainer.value.clientHeight);
@@ -57,6 +47,10 @@ const initThree = () => {
   
   // Start rendering
   animate();
+
+  // handle resize
+  window.addEventListener('resize', onResize);
+
 
 }
 
@@ -86,10 +80,13 @@ const createShape = () => {
   shape.position.set(0, 0, 0);
   
   scene.add(shape)
+}
 
-  console.log("Shape added:", shape);
-  console.log("Scene children:", scene.children);
-
+// handle resize
+const onResize = () => {
+  camera.aspect = threeContainer.value.clientWidth / threeContainer.value.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(threeContainer.value.clientWidth, threeContainer.value.clientHeight);
 }
 
 // MISSING - Handle cleanup
@@ -104,16 +101,11 @@ const cleanup = () => {
       threeContainer.value.removeChild(renderer.domElement);
     }
   }
+
+  window.removeEventListener('resize', onResize);
 }
 
 onMounted(() => {
-console.log("threeContainer w", threeContainer.value.clientWidth)
-console.log("threeContainer h", threeContainer.value.clientHeight)
-
-console.log("window width", window.innerWidth)
-
-  console.log("Component mounted, container:", threeContainer.value);
-  
   if (threeContainer.value) {
     initThree();
   }
