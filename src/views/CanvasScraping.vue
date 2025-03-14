@@ -2,16 +2,16 @@
   <div class="cursor" ref="cursor">
     <div class="cursor-circle" ref="cursorCircle"></div>
     <img src="/cross100.svg" />
-    <span class="cursor-text" ref="cursorText">draw something</span>
+    <span class="cursor-text" ref="cursorText">reduce me</span>
   </div>
   <h1 class="test">Scratch me</h1>
   
   <section class="scratched-in">
-    <div class="pattern"></div>
+    <img src="/images/scraping/scraping-in.jpg" alt="">
     <canvas class="in" ref="canvas"></canvas>
   </section>
   <section class="scratched-out">
-    <img src="/images/scraping-out.jpeg" alt="">
+    <img src="/images/scraping/scraping-out.jpg" alt="">
     <canvas class="out" ref="canvasOut"></canvas>
   </section>
   
@@ -61,7 +61,7 @@
       duration: 0.1,
     })
     gsap.to(cursorText.value, {
-      innerText: 'release me plz',
+      innerText: 'to nothingness',
     })
       
   }
@@ -73,7 +73,7 @@
       duration: 0.1,
     })
     gsap.to(cursorText.value, {
-      innerText: 'this is cool',
+      innerText: 'reduce me',
     })
     
   }
@@ -118,7 +118,7 @@
 
     ctx.fillRect(0, 0, w, h) 
 
-    ctx.lineWidth = 80
+    ctx.lineWidth = 40
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
 
@@ -245,7 +245,7 @@
     mix-blend-mode: lighten;
   }
   
-  section.scratched-out {
+  section.scratched-out, section.scratched-in {
     position: absolute;
     top: 0;
     left: 0;
@@ -254,17 +254,8 @@
     mix-blend-mode: darken;
   }
 
-  .pattern{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/images/scraping-bg.jpeg');
-    background-size: repeat;
-
-  }
-  section.scratched-out img{
+  
+  section.scratched-out img, section.scratched-in img {
     
     width: 100%;
     height: 100%;
