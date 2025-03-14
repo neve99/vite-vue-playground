@@ -22,6 +22,10 @@ const routes = [
     path: '/line',
     component: () => import('../views/LineDrawer.vue'),
   },
+  {
+    path: '/blend',
+    component: () => import('../views/CanvasBlendScratch.vue'),
+  },
 ]
 
 const router = createRouter({

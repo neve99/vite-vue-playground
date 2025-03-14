@@ -376,7 +376,7 @@
 
   onUnmounted(() => {
     // Remove class from body to restore cursor
-    document.body.classList.remove('hide-cursor')
+    document.body.classList.remove('hide-cursor-1')
 
     window.removeEventListener('mousemove', handleMouseMove)
     window.removeEventListener('mousedown', handleMouseDown)
