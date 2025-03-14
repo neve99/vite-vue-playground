@@ -243,35 +243,43 @@
   } 
 
   const calculateCoverage = (canvas) => {
+    // Create a downsampled version for analysis
+    const offscreenCanvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // Use a smaller size for analysis (e.g., 100×100 pixels)
+    const scaleFactor = Math.max(canvas.width, canvas.height) / 100;
+    const offW = Math.floor(canvas.width / scaleFactor);
+    const offH = Math.floor(canvas.height / scaleFactor);
+    
+    offscreenCanvas.width = offW;
+    offscreenCanvas.height = offH;
+    
+    // Draw the main canvas onto the smaller one
+    const offCtx = offscreenCanvas.getContext('2d');
+    offCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, offW, offH);
+    
+    // Analyze the smaller canvas (many fewer pixels)
+    const imageData = offCtx.getImageData(0, 0, offW, offH);
     const data = imageData.data;
     
-    let totalPixels = data.length / 4; // Each pixel has 4 values (RGBA)
+    let totalPixels = data.length / 4;
     let scratchedPixels = 0;
     
-    // For "in" canvas (black scratch revealing white)
     if (canvas.classList.contains('in')) {
-      // Count black pixels (scratched areas)
       for (let i = 0; i < data.length; i += 4) {
-        // If pixel is black/nearly black (scratched area)
         if (data[i] < 20 && data[i+1] < 20 && data[i+2] < 20) {
           scratchedPixels++;
         }
       }
-    } 
-    // For "out" canvas (white scratch on black)
-    else {
-      // Count white/transparent pixels (scratched areas)
+    } else {
       for (let i = 0; i < data.length; i += 4) {
-        // If pixel is white/transparent (scratched area)
         if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) {
           scratchedPixels++;
         }
       }
     }
     
-    // Calculate percentage scratched
     const percentScratched = (scratchedPixels / totalPixels) * 100;
     
     return {
