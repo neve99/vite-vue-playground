@@ -306,7 +306,7 @@ onMounted(() => {
 
 onUnmounted(() => {
 
-  document.body.classList.remove('hide-cursor')
+  document.body.classList.remove('hide-cursor-1')
 
   // Make sure to clear the interval when component is unmounted
   if (soundInterval.value) {
@@ -442,4 +442,6 @@ body.hide-cursor {
   background-color: red;
   cursor: none;
 }
+
+
 </style>

@@ -1,26 +1,29 @@
 <template>
   <div class="scratch-container">
-  <div class="cursor" ref="cursor">
-    <div class="cursor-circle" ref="cursorCircle"></div>
-    <img src="/cross100.svg" />
-    <span class="cursor-text" ref="cursorText">reduce me</span>
-  </div>
-  <h1 class="test">Scratch me</h1>
-  
-  <section class="scratched-in">
-    <img src="/images/scraping/scraping-in.jpg" alt="">
-    <canvas class="in" ref="canvas"></canvas>
-  </section>
-  <section class="scratched-out">
-    <img src="/images/scraping/scraping-out.jpg" alt="">
-    <canvas class="out" ref="canvasOut"></canvas>
-  </section>
-  
-  <!-- <p class="test">
-    Quantum entanglement is the phenomenon of a group of particles being generated, interacting, or sharing spatial proximity in a manner such that the quantum state of each particle of the group cannot be described independently of the state of the others, including when the particles are separated by a large distance. The topic of quantum entanglement is at the heart of the disparity between classical physics and quantum physics: entanglement is a primary feature of quantum mechanics not present in classical mechanics.
-  
-    Measurements of physical properties such as position, momentum, spin, and polarization performed on entangled particles can, in some cases, be found to be perfectly correlated. For example, if a pair of entangled particles is generated such that their total spin is known to be zero, and one particle is found to have clockwise spin on a first axis, then the spin of the other particle, measured on the same axis, is found to be anticlockwise. However, this behavior gives rise to seemingly paradoxical effects: any measurement of a particle's properties results in an apparent and irreversible wave function collapse of that particle and changes the original quantum state. With entangled particles, such measurements affect the entangled system as a whole.
-  </p> -->
+    <div class="coverage-display" ref="coverageDisplay">
+      Scratched: 0%
+    </div>
+    <div class="cursor" ref="cursor">
+      <div class="cursor-circle" ref="cursorCircle"></div>
+      <img src="/cross100.svg" />
+      <span class="cursor-text" ref="cursorText">reduce me</span>
+    </div>
+    <h1 class="test">Scratch me</h1>
+    
+    <section class="scratched-in">
+      <img src="/images/scraping/scraping-in.jpg" alt="">
+      <canvas class="in" ref="canvas"></canvas>
+    </section>
+    <section class="scratched-out">
+      <img src="/images/scraping/scraping-out.jpg" alt="">
+      <canvas class="out" ref="canvasOut"></canvas>
+    </section>
+    
+    <!-- <p class="test">
+      Quantum entanglement is the phenomenon of a group of particles being generated, interacting, or sharing spatial proximity in a manner such that the quantum state of each particle of the group cannot be described independently of the state of the others, including when the particles are separated by a large distance. The topic of quantum entanglement is at the heart of the disparity between classical physics and quantum physics: entanglement is a primary feature of quantum mechanics not present in classical mechanics.
+    
+      Measurements of physical properties such as position, momentum, spin, and polarization performed on entangled particles can, in some cases, be found to be perfectly correlated. For example, if a pair of entangled particles is generated such that their total spin is known to be zero, and one particle is found to have clockwise spin on a first axis, then the spin of the other particle, measured on the same axis, is found to be anticlockwise. However, this behavior gives rise to seemingly paradoxical effects: any measurement of a particle's properties results in an apparent and irreversible wave function collapse of that particle and changes the original quantum state. With entangled particles, such measurements affect the entangled system as a whole.
+    </p> -->
 </div>
 </template>
 
@@ -35,6 +38,10 @@
   const canvas = ref(null)
   const canvasOut = ref(null)
   const isMouseDown = ref(false)
+
+  const coverageDisplay = ref(null)
+  const throttleTime = 100; // Throttle in ms
+  let lastUpdateTime = 0;
 
   const handleMouseMove = (e) => {
 
@@ -221,7 +228,7 @@
 
   onMounted(() => {
     // Add class to body to hide cursor
-    document.body.classList.add('hide-cursor')
+    document.body.classList.add('hide-cursor-1')
 
     // Initial opacity set to 0
     gsap.set(cursor.value, { opacity: 0 })
@@ -266,6 +273,10 @@
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+  }
+  .coverage-display{
+    pointer-events: none;
+
   }
   .cursor {
     position: fixed;
@@ -349,7 +360,9 @@
 
 <style>
   /* Global style to hide cursor when .hide-cursor class is present on body */
-  body.hide-cursor {
+  body.hide-cursor-1 {
     cursor: none;
+;   background-color: white;
   }
+
 </style>
