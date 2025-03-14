@@ -40,7 +40,7 @@
   const isMouseDown = ref(false)
 
   const coverageDisplay = ref(null)
-  const throttleTime = 100; // Throttle in ms
+  const throttleTime = 400; // Throttle in ms
   let lastUpdateTime = 0;
 
   const handleMouseMove = (e) => {
