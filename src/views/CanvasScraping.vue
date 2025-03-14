@@ -1,4 +1,5 @@
 <template>
+  <div class="scratch-container">
   <div class="cursor" ref="cursor">
     <div class="cursor-circle" ref="cursorCircle"></div>
     <img src="/cross100.svg" />
@@ -20,7 +21,7 @@
   
     Measurements of physical properties such as position, momentum, spin, and polarization performed on entangled particles can, in some cases, be found to be perfectly correlated. For example, if a pair of entangled particles is generated such that their total spin is known to be zero, and one particle is found to have clockwise spin on a first axis, then the spin of the other particle, measured on the same axis, is found to be anticlockwise. However, this behavior gives rise to seemingly paradoxical effects: any measurement of a particle's properties results in an apparent and irreversible wave function collapse of that particle and changes the original quantum state. With entangled particles, such measurements affect the entangled system as a whole.
   </p> -->
-
+</div>
 </template>
 
 <script setup>
@@ -76,6 +77,67 @@
       innerText: 'reduce me',
     })
     
+  }
+
+  const handleTouchStart = (e) => {
+    e.preventDefault()
+
+    // convert touch to mouse event
+    const touch = e.touches[0]
+
+    isMouseDown.value = true
+    startDraw(canvas.value, touch)
+    startDraw(canvasOut.value, touch)
+
+    // update cursor
+    if (cursor.value) {
+      gsap.to(cursorCircle.value, {
+        x: touch.clientX,
+        y: touch.clientY,
+        duration: 0.2,
+      })
+      gsap.to(cursorCircle.value, {
+        scale:5.5,
+        duration: 0.1,
+      })
+      gsap.to(cursorText.value, {
+        innerText: 'to nothingness',
+      })
+    }
+  }
+  const handleTouchMove = (e) => {
+    e.preventDefault()
+
+    // convert touch to mouse event
+    const touch = e.touches[0]
+
+    moveDraw(canvas.value, touch)
+    moveDraw(canvasOut.value, touch)
+
+    // update cursor
+    if (cursor.value) {
+      gsap.to(cursor.value, {
+        x: touch.clientX,
+        y: touch.clientY,
+        duration: 0.2,
+      })
+    }
+  }
+  const handleTouchEnd = (e) => {
+    e.preventDefault()
+
+    isMouseDown.value = false
+
+    // update cursor
+    if (cursorCircle.value && cursorText.value) {
+      gsap.to(cursorCircle.value, {
+        scale: 1,
+        duration: 0.1,
+      })
+      gsap.to(cursorText.value, {
+        innerText: 'reduce me',
+      })
+    }
   }
 
   // Setup canvas /////////////////////////////////////////////////
@@ -152,6 +214,11 @@
     }
   }
 
+  const handleResize = () => {
+    setupCanvas(canvas.value)
+    setupCanvas(canvasOut.value)
+  } 
+
   onMounted(() => {
     // Add class to body to hide cursor
     document.body.classList.add('hide-cursor')
@@ -161,29 +228,45 @@
 
     setupCanvas(canvas.value)
     setupCanvas(canvasOut.value)
+
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
-    window.addEventListener('resize', () => {
-      setupCanvas(canvas.value)
-      setupCanvas(canvasOut.value)
-    })
+
+    window.addEventListener('touchstart', handleTouchStart)
+    window.addEventListener('touchmove', handleTouchMove)
+    window.addEventListener('touchend', handleTouchEnd)
+
+    window.addEventListener('resize', handleResize)
   })
 
   onUnmounted(() => {
     // Remove class from body to restore cursor
     document.body.classList.remove('hide-cursor')
+
     window.removeEventListener('mousemove', handleMouseMove)
     window.removeEventListener('mousedown', handleMouseDown)
     window.removeEventListener('mouseup', handleMouseUp)
-    window.removeEventListener('resize', () => {
-      setupCanvas(canvas.value)
-      setupCanvas(canvasOut.value)
-    })
+
+    window.removeEventListener('touchstart', handleTouchStart)
+    window.removeEventListener('touchmove', handleTouchMove)
+    window.removeEventListener('touchend', handleTouchEnd)
+
+    window.removeEventListener('resize', handleResize)
   })
 </script>
 
 <style scoped>
+  .scratch-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    touch-action: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
   .cursor {
     position: fixed;
     pointer-events: none;
@@ -240,8 +323,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     mix-blend-mode: lighten;
   }
   
@@ -249,8 +332,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     mix-blend-mode: darken;
   }
 
