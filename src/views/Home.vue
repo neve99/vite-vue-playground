@@ -11,7 +11,7 @@
       <router-link to="/snow">Snow Scraping</router-link>
       <router-link to="/matter">Matter</router-link>
       <router-link to="/line">Line Drawer</router-link>
-      <router-link to="/blend">Blend Scratch</router-link>
+
 
 
     </div>

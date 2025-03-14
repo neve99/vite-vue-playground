@@ -12,12 +12,12 @@
     <h1 class="test">Scratch me</h1>
     
     <section class="scratched-in">
-      <img src="/images/scraping/scraping-in.jpg" alt="">
+      <img src="/images/scraping/7.jpg" alt="" ref="bottomImg">
       <canvas class="in" ref="canvas"></canvas>
     </section>
 
     <section class="scratched-out">
-      <img src="/images/scraping/scraping-out.jpg" alt="">
+      <img src="/images/scraping/6.jpg" alt="" ref="topImg">
       <canvas class="out" ref="canvasOut"></canvas>
     </section>
     
@@ -41,6 +41,8 @@
   const canvasOut = ref(null)
   const isMouseDown = ref(false)
   const isTransitioning = ref(false);
+  const bottomImg = ref(null)
+  const topImg = ref(null)
 
   const coverageDisplay = ref(null)
   const throttleTime = 400; // Throttle in ms
@@ -48,6 +50,15 @@
 
   let currentImageIndex = 0
   const totalImages = 5
+
+  // test change image src
+  const changeImageAfterDelay = () => {
+    setTimeout(() => {
+      if (topImg.value) {
+        topImg.value.src = '/images/scraping/1.jpg'
+      }
+    }, 2000)
+  }
 
   // handle 80% coverage threshold
   const handleThreshold = async () => {
@@ -349,8 +360,10 @@
   };
 
   onMounted(() => {
+    // Change image after delay
+    changeImageAfterDelay()
     // Preload images
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       const img = new Image();
       img.src = `/images/scraping/${i}.jpg`;
     }
@@ -402,8 +415,13 @@
     user-select: none;
   }
   .coverage-display{
+    position: fixed;
+    top: 10px;
     pointer-events: none;
-
+    left: 50%;
+    transform: translateX(-50%);
+    color: black;
+    z-index: 100;
   }
   .cursor {
     position: fixed;
