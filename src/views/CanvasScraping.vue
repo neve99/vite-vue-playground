@@ -216,8 +216,24 @@
     // pixel rectangle draw
     // ctx.fillRect(x - 50, y - 50, 100, 100)
     if (isMouseDown.value) {
-    ctx.lineTo(x, y)
-    ctx.stroke()
+      ctx.lineTo(x, y)
+      ctx.stroke()
+      // Throttle coverage calculation to avoid performance issues
+      const now = Date.now();
+      if (now - lastUpdateTime > throttleTime) {
+        lastUpdateTime = now;
+        const coverage = calculateCoverage(canvas);
+        
+        if (coverageDisplay.value) {
+          coverageDisplay.value.textContent = `Scratched: ${coverage.percentScratched}%`;
+        }
+        
+        // Optional: Trigger an event when scratch reaches a certain percentage
+        if (coverage.percentScratched > 50) {
+          // console.log('More than 50% scratched!');
+          // Do something special here
+        }
+      }
     }
   }
 
@@ -225,6 +241,45 @@
     setupCanvas(canvas.value)
     setupCanvas(canvasOut.value)
   } 
+
+  const calculateCoverage = (canvas) => {
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    let totalPixels = data.length / 4; // Each pixel has 4 values (RGBA)
+    let scratchedPixels = 0;
+    
+    // For "in" canvas (black scratch revealing white)
+    if (canvas.classList.contains('in')) {
+      // Count black pixels (scratched areas)
+      for (let i = 0; i < data.length; i += 4) {
+        // If pixel is black/nearly black (scratched area)
+        if (data[i] < 20 && data[i+1] < 20 && data[i+2] < 20) {
+          scratchedPixels++;
+        }
+      }
+    } 
+    // For "out" canvas (white scratch on black)
+    else {
+      // Count white/transparent pixels (scratched areas)
+      for (let i = 0; i < data.length; i += 4) {
+        // If pixel is white/transparent (scratched area)
+        if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) {
+          scratchedPixels++;
+        }
+      }
+    }
+    
+    // Calculate percentage scratched
+    const percentScratched = (scratchedPixels / totalPixels) * 100;
+    
+    return {
+      percentScratched: percentScratched.toFixed(2),
+      scratchedPixels,
+      totalPixels
+    };
+  };
 
   onMounted(() => {
     // Add class to body to hide cursor
