@@ -8,7 +8,7 @@ const routes = [
   },
   {
     path: '/canvas',
-    component: () => import('../views/CanvasScraping.vue'),
+    component: () => import('../views/ScratchBook.vue'),
   },
   {
     path: '/snow',
@@ -21,10 +21,6 @@ const routes = [
   {
     path: '/line',
     component: () => import('../views/LineDrawer.vue'),
-  },
-  {
-    path: '/blend',
-    component: () => import('../views/CanvasBlendScratch.vue'),
   },
 ]
 

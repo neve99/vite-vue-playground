@@ -7,7 +7,7 @@
     </div>  
     <p>Here are the projects:</p>
     <div class="router-links">
-      <router-link to="/canvas">Canvas Scraping</router-link>
+      <router-link to="/canvas">Scratch Book</router-link>
       <router-link to="/snow">Snow Scraping</router-link>
       <router-link to="/matter">Matter</router-link>
       <router-link to="/line">Line Drawer</router-link>
