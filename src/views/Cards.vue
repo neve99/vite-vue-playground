@@ -29,7 +29,7 @@
           </div>
         </div>
         <div class="card">
-          <img src="/images/cards/02.jpg" alt="">
+          <img src="/images/cards/07.jpg" alt="">
           <div class="copy">
             <h1>Lorem, ipsum.</h1>
           </div>
@@ -47,7 +47,7 @@
           </div>
         </div>
         <div class="card">
-          <img src="/images/cards/05.jpg" alt="">
+          <img src="/images/cards/06.jpg" alt="">
           <div class="copy">
             <h1>Lorem, ipsum.</h1>
           </div>
@@ -58,14 +58,64 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'; 
+import { onMounted, ref, nextTick } from 'vue'; 
 import gsap from 'gsap'
+import CustomEase from "gsap/CustomEase";
+
+gsap.registerPlugin(CustomEase)
 
 const sliderRef = ref(null)
+let cards = []; // Declare as empty array first
+let lastCard = null;
+let nextCard = null;
+CustomEase.create("cubic", "0.83, 0, 0.17, 1")
 
-onMounted(() => {
-  // log the width of the slider
-  console.log(sliderRef.value.clientWidth)
+let isAnimating = false
+
+function splitTextIntoSpans(selector) {
+  let elements = document.querySelectorAll(selector)
+  elements.forEach(el => {
+    let text = el.innerText
+    let splitText = text
+      .split('')
+      .map(function (char){
+        return `<span>${char === " " ? "&nbsp;&nbsp" : char}</span>`
+      })
+      .join('')
+    el.innerHTML = splitText;
+  })
+}
+
+const initializeCards = () => {
+  gsap.to(cards,{
+    y: (i) => -15 + 15 * i + '%',
+    z: (i) => 15 * i,
+    duration: 1,
+    ease: 'cubic',
+    stagger: -0.1
+  })
+}
+
+onMounted(async() => {
+  await nextTick();
+
+  // Initialize cards here after DOM is available
+  cards = Array.from(sliderRef.value.children);
+  lastCard = cards[cards.length - 1];
+  nextCard = cards[cards.length - 2];
+  
+  splitTextIntoSpans('.copy h1')
+  initializeCards()
+
+  gsap.set('h1 span', { y: -200})
+  gsap.set('.slider .card:last-child h1 span', { y: 0})
+
+  document.addEventListener('click', () => {
+    if (isAnimating) return
+    isAnimating = true
+
+    
+  })
 })
 </script>
 
@@ -164,5 +214,42 @@ footer{
 
   transform: translate3d(-50%, -50%, 0);
   background: #000;
+}
+
+.card img{
+  position: absolute;
+  opacity: 0.75;
+}
+
+.copy{
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+} 
+
+h1 {
+  position: relative;
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 7vw;
+  font-weight: 300;
+  transform: scaleX(0.75);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #dfe1c8;
+}
+
+h1 span {
+  position: relative;
+  display: inline-block; 
+}
+
+@media (max-width: 900px){
+  .pages{
+    display: none;
+  }
 }
 </style>
