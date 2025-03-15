@@ -51,8 +51,8 @@
 
   const totalImgNum = 7
 
-  let currentSoundIndex = 0
-  const totalSoundNum = 7
+  let currentSoundIndex = 1
+  const totalSoundNum = 6
 
   // play thunder sound
   const playThunder = () => {
@@ -112,9 +112,6 @@
     await new Promise(resolve => setTimeout(resolve, 100));
     
     // Play thunder sound
-    const audio = new Audio('/mp3/thunder/1.mp3');
-    audio.volume = 0.7;
-    audio.play();
     playThunder()
 
     // Calculate next image number
@@ -552,7 +549,6 @@
 
   
   section.scratched-out img, section.scratched-in img {
-    
     width: 100%;
     height: 100%;
     object-fit: cover;
