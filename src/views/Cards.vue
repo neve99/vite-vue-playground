@@ -1,13 +1,6 @@
 <template>
   <div class="project-wrp">
-    <div class="loading-screen" ref="loadingScreen">
-      <div class="loading-content">
-        <h2>Loading</h2>
-        <div class="loading-bar">
-          <div class="loading-progress" ref="loadingProgress"></div>
-        </div>
-      </div>
-    </div>
+    <div class="loading-indicator" ref="loadingIndicator">Loading...</div>
     <nav>
       <div class="logo">
         <a href="#">Noir Wood</a>
@@ -73,8 +66,7 @@ import CustomEase from "gsap/CustomEase";
 gsap.registerPlugin(CustomEase)
 
 const sliderRef = ref(null)
-const loadingScreen = ref(null);
-const loadingProgress = ref(null);
+const loadingIndicator = ref(null);
 let cards = []; // Declare as empty array first
 let lastCard = null;
 let nextCard = null;
@@ -97,18 +89,6 @@ const preloadImages = () => {
     const imageLoaded = () => {
       loadedCount++;
       
-      // Calculate the target percentage
-      const progressPercent = (loadedCount / totalImages) * 100;
-      
-      // Animate the progress bar with GSAP instead of direct style manipulation
-      if (loadingProgress.value) {
-        gsap.to(loadingProgress.value, {
-          width: `${progressPercent}%`,
-          duration: 0.2,  // Longer duration for smoother animation
-          ease: "power2.out"  // Easing function for smooth transitions
-        });
-      }
-      
       // If all images loaded, resolve the promise
       if (loadedCount === totalImages) resolve();
     };
@@ -120,7 +100,7 @@ const preloadImages = () => {
         imageLoaded();
       } else {
         img.addEventListener('load', imageLoaded);
-        img.addEventListener('error', imageLoaded); // Still count errors to avoid hanging
+        img.addEventListener('error', imageLoaded);
       }
     });
   });
@@ -156,25 +136,14 @@ onMounted(async() => {
   // Wait for images to load
   await preloadImages();
 
-  // Add a slight delay before starting the fade out (looks more natural)
-  await new Promise(resolve => setTimeout(resolve, 0));
-
-  // Create a promise that resolves when the animation is complete
-  const fadeOutComplete = new Promise(resolve => {
-    // Hide loading screen with callback when complete
-    gsap.to(loadingScreen.value, {
-      y: '-100%',
-      duration: 0.8, // Longer fade for smoother transition
-      ease: "cubic", // Smoother easing
-      onComplete: () => {
-        loadingScreen.value.style.display = 'none';
-        resolve(); // Resolve the promise when animation is complete
-      }
-    });
+  // Fade out loading indicator when complete
+  gsap.to(loadingIndicator.value, {
+    opacity: 0,
+    duration: 0.5,
+    onComplete: () => {
+      loadingIndicator.value.style.display = 'none';
+    }
   });
-
-  // Wait for fade out to complete before continuing
-  await fadeOutComplete;
 
   // Initialize cards here after DOM is available
   cards = Array.from(sliderRef.value.children);
@@ -203,49 +172,17 @@ onMounted(async() => {
   box-sizing: border-box;
 }
 
-.loading-screen {
+.loading-indicator {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #dfe1c8;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  transition: opacity 0.5s ease, visibility 0.5s;
-}
+  bottom: 0px;
+  left: 0px;
 
-.loading-content {
-  text-align: center;
-}
-
-.loading-content h2 {
-  font-size: 1rem;
-  margin-bottom: 1rem;
   color: #000;
-  text-transform: uppercase;
-
-}
-
-.loading-bar {
-  width: 200px;
-  height: 4px;
-  background: rgba(0, 0, 0, 0.2);
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
-}
-
-.loading-progress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0%;
-  background: #000;
-  transition: width 0.3s ease;
+  padding: 2em;
+  font-size: 14px;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.5s ease;
 }
 
 img{
