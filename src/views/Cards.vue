@@ -1,5 +1,13 @@
 <template>
   <div class="project-wrp">
+    <div class="loading-screen" ref="loadingScreen">
+      <div class="loading-content">
+        <h2>Loading</h2>
+        <div class="loading-bar">
+          <div class="loading-progress" ref="loadingProgress"></div>
+        </div>
+      </div>
+    </div>
     <nav>
       <div class="logo">
         <a href="#">Noir Wood</a>
@@ -65,12 +73,51 @@ import CustomEase from "gsap/CustomEase";
 gsap.registerPlugin(CustomEase)
 
 const sliderRef = ref(null)
+const loadingScreen = ref(null);
+const loadingProgress = ref(null);
 let cards = []; // Declare as empty array first
 let lastCard = null;
 let nextCard = null;
 CustomEase.create("cubic", "0.83, 0, 0.17, 1")
 
 let isAnimating = false
+
+// preload images
+const preloadImages = () => {
+  return new Promise((resolve) => {
+    // Get all images in the document
+    const images = document.querySelectorAll('.card img');
+    let loadedCount = 0;
+    const totalImages = images.length;
+    
+    // If no images, resolve immediately
+    if (totalImages === 0) resolve();
+    
+    // Function to update progress and check if all images are loaded
+    const imageLoaded = () => {
+      loadedCount++;
+      
+      // Update progress bar if it exists
+      if (loadingProgress.value) {
+        loadingProgress.value.style.width = `${(loadedCount / totalImages) * 100}%`;
+      }
+      
+      // If all images loaded, resolve the promise
+      if (loadedCount === totalImages) resolve();
+    };
+    
+    // Add load and error event listeners to each image
+    images.forEach(img => {
+      // If image is already loaded
+      if (img.complete) {
+        imageLoaded();
+      } else {
+        img.addEventListener('load', imageLoaded);
+        img.addEventListener('error', imageLoaded); // Still count errors to avoid hanging
+      }
+    });
+  });
+};
 
 function splitTextIntoSpans(selector) {
   let elements = document.querySelectorAll(selector)
@@ -99,11 +146,26 @@ const initializeCards = () => {
 onMounted(async() => {
   await nextTick();
 
+  // Wait for images to load
+  await preloadImages();
+
+  // Hide loading screen
+  if (loadingScreen.value) {
+    // Simple fade out
+    gsap.to(loadingScreen.value, {
+      opacity: 0,
+      duration: 0.5,
+      onComplete: () => {
+        loadingScreen.value.style.display = 'none';
+      }
+    });
+  }
+
   // Initialize cards here after DOM is available
   cards = Array.from(sliderRef.value.children);
   lastCard = cards[cards.length - 1];
   nextCard = cards[cards.length - 2];
-  
+
   splitTextIntoSpans('.copy h1')
   initializeCards()
 
@@ -124,6 +186,51 @@ onMounted(async() => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #dfe1c8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-content h2 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #000;
+  text-transform: uppercase;
+
+}
+
+.loading-bar {
+  width: 200px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: #000;
+  transition: width 0.3s ease;
 }
 
 img{
