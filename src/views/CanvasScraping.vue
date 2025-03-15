@@ -56,7 +56,7 @@
   // cycle through images
   const cycleImage = (imgRef) => {
     // safty
-    if(!imgRef.value || imgRef) return null
+    // if(!imgRef.value || imgRef) return null
 
     // get next image number
     const currentSrc = imgRef.value.src
@@ -99,9 +99,11 @@
     // Calculate next image number
     const nextTopImgUrl = cycleImage(topImg)
     const nextBottomImgUrl = cycleImage(bottomImg)
+    console.log('nextTomImg', nextTopImgUrl)
+    console.log('Butt', nextBottomImgUrl)
     
     // Update the images
-    topImg.value.src = '/images/scraping/1.jpg'
+    topImg.value.src = nextTopImgUrl
     if(nextBottomImgUrl) bottomImg.value.src = nextBottomImgUrl
     
     
