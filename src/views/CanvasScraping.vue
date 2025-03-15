@@ -109,7 +109,7 @@
     }, 10);
     
     // Wait for fade-in to complete
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // await new Promise(resolve => setTimeout(resolve, 100));
     
     // Play thunder sound
     playThunder()
