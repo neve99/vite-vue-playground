@@ -22,6 +22,10 @@ const routes = [
     path: '/line',
     component: () => import('../views/LineDrawer.vue'),
   },
+  {
+    path: '/cards',
+    component: () => import('../views/Cards.vue'),
+  },
 ]
 
 const router = createRouter({

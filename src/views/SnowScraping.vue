@@ -1,11 +1,4 @@
 <!-- 
-Todo:
-
-- make draw with other vectors
--->
-
-
-<!-- 
 
 
 TEMPLATE 
@@ -306,7 +299,7 @@ onMounted(() => {
 
 onUnmounted(() => {
 
-  document.body.classList.remove('hide-cursor-1')
+  document.body.classList.remove('hide-cursor')
 
   // Make sure to clear the interval when component is unmounted
   if (soundInterval.value) {
