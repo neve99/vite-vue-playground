@@ -33,6 +33,7 @@
   import { ref, onMounted, onUnmounted } from 'vue'
   import { gsap } from 'gsap'
 
+
   const cursor = ref(null)
   const cursorText = ref(null)
   const cursorCircle = ref(null)
@@ -49,56 +50,82 @@
   let lastUpdateTime = 0;
 
   let currentImageIndex = 0
-  const totalImages = 5
+  const totalImgNum = 7
 
-  // test change image src
-  const changeImageAfterDelay = () => {
-    setTimeout(() => {
-      if (topImg.value) {
-        topImg.value.src = '/images/scraping/1.jpg'
-      }
-    }, 2000)
+
+  // cycle through images
+  const cycleImage = (imgRef) => {
+    // safty
+    if(!imgRef.value || imgRef) return null
+
+    // get next image number
+    const currentSrc = imgRef.value.src
+    let nextImgNum = parseInt(currentSrc.split('/').pop().split('.')[0]) + 1
+
+    if (nextImgNum > totalImgNum) {
+      nextImgNum = 1
+    }
+
+    const nextImgUrl = `/images/scraping/${nextImgNum}.jpg`
+    return nextImgUrl
   }
 
-  // handle 80% coverage threshold
-  const handleThreshold = async () => {
-    // take screenshot
-    const screenshotCanvas = document.createElement('canvas');
-    screenshotCanvas.width = window.innerWidth;
-    screenshotCanvas.height = window.innerHeight;
-    const ctx = screenshotCanvas.getContext('2d');
 
-    // Draw the current visible state to the screenshot canvas
-    // This captures what's actually visible on screen
-    ctx.drawImage(document.documentElement, 0, 0, window.innerWidth, window.innerHeight);
+  // handle 98% coverage threshold
+  const handleThreshold = async () => {
+    // Create white overlay for transition
+    const whiteOverlay = document.createElement('div');
+    whiteOverlay.style.position = 'fixed';
+    whiteOverlay.style.top = '0';
+    whiteOverlay.style.left = '0';
+    whiteOverlay.style.width = '100vw';
+    whiteOverlay.style.height = '100vh';
+    whiteOverlay.style.backgroundColor = 'white';
+    whiteOverlay.style.zIndex = '9999';
+    whiteOverlay.style.opacity = '0';
+    whiteOverlay.style.transition = 'opacity 100ms ease-in-out';
+    whiteOverlay.style.pointerEvents = 'none';
     
-    // Convert to data URL (could also use toBlob for better performance)
-    const screenshotUrl = screenshotCanvas.toDataURL('image/jpeg');
-  
-    // Increment image index
-    currentImageIndex = (currentImageIndex + 1) % totalImages;
+    document.body.appendChild(whiteOverlay);
     
-    // Get the next image
-    const nextImageUrl = `/images/scraping/${currentImageIndex + 1}.jpg`;
+    // Fade in white overlay
+    setTimeout(() => {
+      whiteOverlay.style.opacity = '1';
+    }, 10);
+    
+    // Wait for fade-in to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Calculate next image number
+    const nextTopImgUrl = cycleImage(topImg)
+    const nextBottomImgUrl = cycleImage(bottomImg)
     
     // Update the images
-    const outImg = document.querySelector('.scratched-out img');
-    const inImg = document.querySelector('.scratched-in img');
+    topImg.value.src = '/images/scraping/1.jpg'
+    if(nextBottomImgUrl) bottomImg.value.src = nextBottomImgUrl
     
-    // Replace out image with screenshot
-    outImg.src = screenshotUrl;
     
-    // Replace in image with next image
-    inImg.src = nextImageUrl;
-    
-    // Reset canvases
+    // Reset both canvases
     setupCanvas(canvas.value);
     setupCanvas(canvasOut.value);
     
-    // Reset coverage
+    // Reset coverage display
     if (coverageDisplay.value) {
       coverageDisplay.value.textContent = 'Scratched: 0%';
     }
+    
+    // Wait a bit with white screen
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Fade out white overlay
+    whiteOverlay.style.opacity = '0';
+    
+    // Clean up after animation
+    setTimeout(() => {
+      document.body.removeChild(whiteOverlay);
+    }, 100);
+    
+    return Promise.resolve();
   }
 
   const handleMouseMove = (e) => {
@@ -245,7 +272,7 @@
 
     ctx.fillRect(0, 0, w, h) 
 
-    ctx.lineWidth = 40
+    ctx.lineWidth = 80
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
 
@@ -293,7 +320,7 @@
         }
 
         // Add threshold detection
-        if (parseFloat(coverage.percentScratched) >= 80 && !isTransitioning) {
+        if (parseFloat(coverage.percentScratched) >= 98 && !isTransitioning.value) {
           isTransitioning.value = true;
           
           // Trigger the image swap with animation
@@ -318,9 +345,13 @@
     const ctx = canvas.getContext('2d');
     
     // Use a smaller size for analysis (e.g., 100×100 pixels)
-    const scaleFactor = Math.max(canvas.width, canvas.height) / 100;
+    /* const scaleFactor = Math.max(canvas.width, canvas.height) / 100;
     const offW = Math.floor(canvas.width / scaleFactor);
-    const offH = Math.floor(canvas.height / scaleFactor);
+    const offH = Math.floor(canvas.height / scaleFactor); */
+
+    // Use a much smaller size for analysis (25x25 pixels is sufficient)
+    const offW = 10;
+    const offH = 10;
     
     offscreenCanvas.width = offW;
     offscreenCanvas.height = offH;
@@ -353,15 +384,14 @@
     const percentScratched = (scratchedPixels / totalPixels) * 100;
     
     return {
-      percentScratched: percentScratched.toFixed(2),
+      percentScratched: percentScratched.toFixed(0),
       scratchedPixels,
       totalPixels
     };
   };
 
   onMounted(() => {
-    // Change image after delay
-    changeImageAfterDelay()
+    
     // Preload images
     for (let i = 1; i <= 7; i++) {
       const img = new Image();
