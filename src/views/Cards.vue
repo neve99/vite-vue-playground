@@ -97,9 +97,16 @@ const preloadImages = () => {
     const imageLoaded = () => {
       loadedCount++;
       
-      // Update progress bar if it exists
+      // Calculate the target percentage
+      const progressPercent = (loadedCount / totalImages) * 100;
+      
+      // Animate the progress bar with GSAP instead of direct style manipulation
       if (loadingProgress.value) {
-        loadingProgress.value.style.width = `${(loadedCount / totalImages) * 100}%`;
+        gsap.to(loadingProgress.value, {
+          width: `${progressPercent}%`,
+          duration: 0.2,  // Longer duration for smoother animation
+          ease: "power2.out"  // Easing function for smooth transitions
+        });
       }
       
       // If all images loaded, resolve the promise
@@ -149,17 +156,25 @@ onMounted(async() => {
   // Wait for images to load
   await preloadImages();
 
-  // Hide loading screen
-  if (loadingScreen.value) {
-    // Simple fade out
+  // Add a slight delay before starting the fade out (looks more natural)
+  await new Promise(resolve => setTimeout(resolve, 0));
+
+  // Create a promise that resolves when the animation is complete
+  const fadeOutComplete = new Promise(resolve => {
+    // Hide loading screen with callback when complete
     gsap.to(loadingScreen.value, {
-      opacity: 0,
-      duration: 0.5,
+      y: '-100%',
+      duration: 0.8, // Longer fade for smoother transition
+      ease: "cubic", // Smoother easing
       onComplete: () => {
         loadingScreen.value.style.display = 'none';
+        resolve(); // Resolve the promise when animation is complete
       }
     });
-  }
+  });
+
+  // Wait for fade out to complete before continuing
+  await fadeOutComplete;
 
   // Initialize cards here after DOM is available
   cards = Array.from(sliderRef.value.children);
