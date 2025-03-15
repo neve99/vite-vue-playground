@@ -49,13 +49,27 @@
   const throttleTime = 400; // Throttle in ms
   let lastUpdateTime = 0;
 
-  let currentImageIndex = 0
   const totalImgNum = 7
 
+  let currentSoundIndex = 0
+  const totalSoundNum = 7
 
+  // play thunder sound
+  const playThunder = () => {
+
+    const audio = new Audio(`/mp3/thunder/${currentSoundIndex}.mp3`)
+    audio.volume = 0.7
+    audio.play()
+    currentSoundIndex++
+    if (currentSoundIndex > totalSoundNum) {
+      currentSoundIndex = 1
+    }
+
+    return currentSoundIndex
+  }
   // cycle through images
   const cycleImage = (imgRef) => {
-    // safty
+    // safety
     // if(!imgRef.value || imgRef) return null
 
     // get next image number
@@ -97,11 +111,15 @@
     // Wait for fade-in to complete
     await new Promise(resolve => setTimeout(resolve, 100));
     
+    // Play thunder sound
+    const audio = new Audio('/mp3/thunder/1.mp3');
+    audio.volume = 0.7;
+    audio.play();
+    playThunder()
+
     // Calculate next image number
     const nextTopImgUrl = cycleImage(topImg)
     const nextBottomImgUrl = cycleImage(bottomImg)
-    console.log('nextTomImg', nextTopImgUrl)
-    console.log('Butt', nextBottomImgUrl)
     
     // Update the images
     topImg.value.src = nextTopImgUrl
@@ -394,6 +412,12 @@
   };
 
   onMounted(() => {
+    // Preload thunder sounds
+    for (let i = 1; i <= 7; i++) {
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.src = `/mp3/thunder/${i}.mp3`;
+    }
     
     // Preload images
     for (let i = 1; i <= 7; i++) {
