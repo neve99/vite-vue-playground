@@ -6,7 +6,7 @@
     <div class="cursor" ref="cursor">
       <div class="cursor-circle" ref="cursorCircle"></div>
       <img src="/cross100.svg" />
-      <span class="cursor-text" ref="cursorText">reduce me</span>
+      <span class="cursor-text" ref="cursorText">scratch me</span>
     </div>
 
     <h1 class="test">Scratch me</h1>
@@ -71,10 +71,11 @@
   }
 
 
-  // handle 98% coverage threshold
+  // handle coverage threshold
   const handleThreshold = async () => {
     // Create white overlay for transition
     const whiteOverlay = document.createElement('div');
+    whiteOverlay.style.display = 'none';
     whiteOverlay.style.position = 'fixed';
     whiteOverlay.style.top = '0';
     whiteOverlay.style.left = '0';
@@ -321,8 +322,8 @@
           // Do something special here
         }
 
-        // Add threshold detection
-        if (parseFloat(coverage.percentScratched) >= 98 && !isTransitioning.value) {
+        // Add threshold detection 99%
+        if (parseFloat(coverage.percentScratched) >= 99 && !isTransitioning.value) {
           isTransitioning.value = true;
           
           // Trigger the image swap with animation
