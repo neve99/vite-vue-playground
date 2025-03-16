@@ -147,8 +147,7 @@ onMounted(async() => {
 
   // Initialize cards here after DOM is available
   cards = Array.from(sliderRef.value.children);
-  lastCard = cards[cards.length - 1];
-  nextCard = cards[cards.length - 2];
+  
 
   splitTextIntoSpans('.copy h1')
   initializeCards()
@@ -157,9 +156,43 @@ onMounted(async() => {
   gsap.set('.slider .card:last-child h1 span', { y: 0})
 
   document.addEventListener('click', () => {
+    console.log('click')
     if (isAnimating) return
     isAnimating = true
+    lastCard = cards.pop();
+    nextCard = cards[cards.length - 1];
+    console.log('lastCard', lastCard.querySelectorAll('h1 span'))
+    const spans = lastCard.querySelectorAll('h1 span')
+    //make the spans bigger
 
+    gsap.to(spans, {
+      color: 'pink',
+      y: 200,
+      duration: 0.75,
+      ease: 'cubic',
+    })
+
+    gsap.to(lastCard, {
+      y: '+=150%',
+      duration: .75,
+      ease: 'cubic',
+      onComplete: () => {
+        sliderRef.value.prepend(lastCard)
+        initializeCards()
+        gsap.set(lastCard.querySelectorAll('h1 span'), { y: -200})
+
+        setTimeout(() => {
+          isAnimating = false
+        },1000)
+      }
+    })
+
+    gsap.to(nextCard, {
+      y: 0,
+      duration: 1,
+      ease: 'cubic',
+      stagger: 0.05,
+    })
     
   })
 })
@@ -292,11 +325,11 @@ footer{
 h1 {
   position: relative;
   text-align: center;
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 7vw;
+  font-family: 'PP Editorial Old', 'Times New Roman', Times, serif;
+  font-size: 6vw;
   font-weight: 300;
-  transform: scaleX(0.75);
-  letter-spacing: -0.02em;
+  /* transform: scaleX(0.75); */
+  letter-spacing: -0.05em;
   text-transform: uppercase;
   color: #dfe1c8;
 }
@@ -304,6 +337,9 @@ h1 {
 h1 span {
   position: relative;
   display: inline-block; 
+  transform: translateY(-2000px); /* Initialize transform */
+  will-change: transform; /* Optimize for animation */
+
 }
 
 @media (max-width: 900px){
