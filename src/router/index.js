@@ -26,6 +26,10 @@ const routes = [
     path: '/cards',
     component: () => import('../views/Cards.vue'),
   },
+  {
+    path: '/test',
+    component: () => import('../views/Test.vue'),
+  },
 ]
 
 const router = createRouter({

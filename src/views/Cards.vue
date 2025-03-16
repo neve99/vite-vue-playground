@@ -156,17 +156,25 @@ onMounted(async() => {
   gsap.set('.slider .card:last-child h1 span', { y: 0})
 
   document.addEventListener('click', () => {
+
     console.log('click')
+
     if (isAnimating) return
     isAnimating = true
+
+    const slider = sliderRef.value;
+
     lastCard = cards.pop();
     nextCard = cards[cards.length - 1];
-    console.log('lastCard', lastCard.querySelectorAll('h1 span'))
+
+    console.log('lastCard spans', lastCard.querySelectorAll('h1 span'))
+    console.log('nextCard', nextCard)
+
     const spans = lastCard.querySelectorAll('h1 span')
     //make the spans bigger
 
     gsap.to(spans, {
-      color: 'pink',
+      color: 'red',
       y: 200,
       duration: 0.75,
       ease: 'cubic',
@@ -174,10 +182,11 @@ onMounted(async() => {
 
     gsap.to(lastCard, {
       y: '+=150%',
-      duration: .75,
+      duration: 0.75,
       ease: 'cubic',
       onComplete: () => {
-        sliderRef.value.prepend(lastCard)
+        slider.prepend(lastCard)
+
         initializeCards()
         gsap.set(lastCard.querySelectorAll('h1 span'), { y: -200})
 
@@ -337,9 +346,6 @@ h1 {
 h1 span {
   position: relative;
   display: inline-block; 
-  transform: translateY(-2000px); /* Initialize transform */
-  will-change: transform; /* Optimize for animation */
-
 }
 
 @media (max-width: 900px){
