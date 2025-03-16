@@ -106,7 +106,7 @@ const preloadImages = () => {
   });
 };
 
-function splitTextIntoSpans(selector) {
+const splitTextIntoSpans = (selector) => {
   let elements = document.querySelectorAll(selector)
   elements.forEach(el => {
     let text = el.innerText
@@ -121,12 +121,14 @@ function splitTextIntoSpans(selector) {
 }
 
 const initializeCards = () => {
+  // Initialize cards here after DOM is available
+  cards = Array.from(sliderRef.value.children); 
   gsap.to(cards,{
     y: (i) => -15 + 15 * i + '%',
     z: (i) => 15 * i,
     duration: 1,
     ease: 'cubic',
-    stagger: -0.1
+    stagger: -0.1,
   })
 }
 
@@ -145,8 +147,7 @@ onMounted(async() => {
     }
   });
 
-  // Initialize cards here after DOM is available
-  cards = Array.from(sliderRef.value.children);
+  
   
 
   splitTextIntoSpans('.copy h1')
@@ -343,7 +344,7 @@ h1 {
   color: #dfe1c8;
 }
 
-h1 span {
+:deep(h1 span) {
   position: relative;
   display: inline-block; 
 }
