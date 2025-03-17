@@ -148,7 +148,9 @@ const initializeCards = () => {
 
   // get the active card
   activeCard = cards[cards.length - 1];
-  activeCard.addEventListener('mousemove', handleMouseMove)
+  setTimeout(() => {
+    activeCard.addEventListener('mousemove', handleMouseMove)
+  }, 800)
 }
 
 const handleMouseMove = (e) => {
