@@ -24,31 +24,41 @@
     <div class="container">
       <div class="slider" ref="sliderRef">
         <div class="card">
-          <img src="/images/cards/01.jpg" alt="">
+          <div class="img-ctn">
+            <img src="/images/cards/01.jpg" alt="">
+          </div>
           <div class="copy">
             <h1>Lorem, ipsum.</h1>
           </div>
         </div>
         <div class="card">
-          <img src="/images/cards/07.jpg" alt="">
+          <div class="img-ctn">
+            <img src="/images/cards/07.jpg" alt="">
+          </div>
           <div class="copy">
             <h1>Lorem, ipsum.</h1>
           </div>
         </div>
         <div class="card">
-          <img src="/images/cards/03.jpg" alt="">
+          <div class="img-ctn">
+            <img src="/images/cards/03.jpg" alt="">
+          </div>
           <div class="copy">
             <h1>Lorem, ipsum.</h1>
           </div>
         </div>
         <div class="card">
-          <img src="/images/cards/04.jpg" alt="">
+          <div class="img-ctn">
+            <img src="/images/cards/04.jpg" alt="">
+          </div>
           <div class="copy">
             <h1>Lorem, ipsum.</h1>
           </div>
         </div>
         <div class="card">
-          <img src="/images/cards/06.jpg" alt="">
+          <div class="img-ctn">
+            <img src="/images/cards/06.jpg" alt="">
+          </div>
           <div class="copy">
             <h1>Lorem, ipsum.</h1>
           </div>
@@ -59,7 +69,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, nextTick } from 'vue'; 
+import { onMounted, ref, nextTick, onUnmounted } from 'vue'; 
 import gsap from 'gsap'
 import CustomEase from "gsap/CustomEase";
 
@@ -67,9 +77,12 @@ gsap.registerPlugin(CustomEase)
 
 const sliderRef = ref(null)
 const loadingIndicator = ref(null);
+const mouseX = ref(0);
+const mouseY = ref(0);
 let cards = []; // Declare as empty array first
 let lastCard = null;
 let nextCard = null;
+let activeCard = null;
 CustomEase.create("cubic", "0.83, 0, 0.17, 1")
 
 let isAnimating = false
@@ -132,6 +145,26 @@ const initializeCards = () => {
     ease: 'cubic',
     stagger: -0.1,
   })
+
+  // get the active card
+  activeCard = cards[cards.length - 1];
+  activeCard.addEventListener('mousemove', handleMouseMove)
+}
+
+const handleMouseMove = (e) => {
+  
+
+  // calculate mouse position
+  mouseX.value = (e.clientX / window.innerWidth) - 0.5
+  mouseY.value = (e.clientY / window.innerHeight) - 0.5
+
+  // apply the parallax effect to the nextCard
+  const paraImg = activeCard.querySelector('img')
+  gsap.to(paraImg, {
+    x: mouseX.value * 15,
+    y: mouseY.value * 15,
+    duration: 0.5,
+  })
 }
 
 onMounted(async() => {
@@ -164,6 +197,7 @@ onMounted(async() => {
   gsap.set('h1 span', { y: -200})
   gsap.set('.slider .card:last-child h1 span', { y: 0})
 
+
   document.addEventListener('click', () => {
 
     // console.log('click')
@@ -176,6 +210,7 @@ onMounted(async() => {
     // remove last card from array and store it, then get the next card
     lastCard = cards.pop();
     nextCard = cards[cards.length - 1];
+
 
     
     // control the lastcard text sliding down and changing color
@@ -215,6 +250,13 @@ onMounted(async() => {
     })
     
   })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('click', () => {})
+  activeCard.removeEventListener('mousemove', handleMouseMove)
+
+
 })
 </script>
 
@@ -333,10 +375,21 @@ footer p{
   background: #000;
 }
 
+.img-ctn{
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
 .card img{
   position: absolute;
   opacity: 0.75;
   user-select: none;
+  transform: scale(1.5);
 }
 
 .copy{
