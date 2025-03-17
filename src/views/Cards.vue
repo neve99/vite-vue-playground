@@ -152,9 +152,10 @@ onMounted(async() => {
 
   splitTextIntoSpans('.copy h1')
   initializeCards()
+  
 
-  gsap.set('h1 span', { y: -200})
-  gsap.set('.slider .card:last-child h1 span', { y: 0})
+  // gsap.set('h1 span', { y: -200})
+  // gsap.set('.slider .card:last-child h1 span', { y: 0})
 
   document.addEventListener('click', () => {
 
@@ -171,16 +172,18 @@ onMounted(async() => {
     console.log('lastCard spans', lastCard.querySelectorAll('h1 span'))
     console.log('nextCard', nextCard)
 
-    const spans = lastCard.querySelectorAll('h1 span')
-    //make the spans bigger
 
-    gsap.to(spans, {
+    const lastcardSpans = lastCard.querySelectorAll('h1 span')
+
+    // control the lastcard text sliding down and changing color
+    gsap.to(lastcardSpans, {
       color: 'red',
       y: 200,
       duration: 0.75,
       ease: 'cubic',
     })
 
+    // slide lastcard itself down
     gsap.to(lastCard, {
       y: '+=150%',
       duration: 0.75,
@@ -197,12 +200,12 @@ onMounted(async() => {
       }
     })
 
-    gsap.to(nextCard, {
+    /* gsap.to(nextCard, {
       y: 0,
       duration: 1,
       ease: 'cubic',
       stagger: 0.05,
-    })
+    }) */
     
   })
 })
@@ -321,6 +324,7 @@ footer{
 .card img{
   position: absolute;
   opacity: 0.75;
+  user-select: none;
 }
 
 .copy{
@@ -347,6 +351,7 @@ h1 {
 :deep(h1 span) {
   position: relative;
   display: inline-block; 
+  user-select: none;
 }
 
 @media (max-width: 900px){
