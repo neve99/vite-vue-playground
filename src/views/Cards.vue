@@ -163,8 +163,8 @@ const handleMouseMove = (e) => {
   // apply the parallax effect to the nextCard
   const paraImg = activeCard.querySelector('img')
   gsap.to(paraImg, {
-    x: mouseX.value * 15,
-    y: mouseY.value * 15,
+    x: - mouseX.value * 25,
+    y: - mouseY.value * 25,
     duration: 0.5,
   })
 }
