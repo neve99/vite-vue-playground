@@ -6,6 +6,7 @@ TEMPLATE
 
 -->
 <template>
+
   <div class="cursor" ref="cursor">
     <div class="cursor-circle" ref="cursorCircle"></div>
     <!-- <img src="/cross100.svg" class="cross"/> -->
@@ -21,6 +22,7 @@ TEMPLATE
   <section class="scratched-in">
     <canvas class="in" ref="canvas"></canvas>
   </section>
+
 </template>
 <!-- 
 
@@ -326,6 +328,7 @@ STYLE
 
 -->
 <style scoped>
+
 .cursor {
   position: fixed;
   pointer-events: none;
@@ -350,6 +353,12 @@ STYLE
   text-align: left;
 }
 h1.test{
+  font-size: 10vw;
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 10vw;
   color: #fff;
 }
@@ -427,6 +436,7 @@ canvas.in {
   background-size: repeat;
   z-index: -2;
 }
+
 </style>
 
 <style>
@@ -434,6 +444,8 @@ canvas.in {
 body.hide-cursor {
   background-color: red;
   cursor: none;
+  height: 100vh;
+  width: 100vw;
 }
 
 
