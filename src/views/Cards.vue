@@ -123,6 +123,8 @@ const splitTextIntoSpans = (selector) => {
 const initializeCards = () => {
   // Initialize cards here after DOM is available
   cards = Array.from(sliderRef.value.children); 
+
+  // Set initial position of cards, each cards will be pushed upwards by 15% and z position will be increased by 15 depending on their index
   gsap.to(cards,{
     y: (i) => -15 + 15 * i + '%',
     z: (i) => 15 * i,
@@ -141,9 +143,11 @@ onMounted(async() => {
   // Fade out loading indicator when complete
   gsap.to(loadingIndicator.value, {
     opacity: 0,
-    duration: 0.5,
+    duration: 0.8,
     onComplete: () => {
-      loadingIndicator.value.style.display = 'none';
+      setTimeout(() => {
+        loadingIndicator.value.style.display = 'none';
+      }, 500);
     }
   });
 
@@ -151,31 +155,34 @@ onMounted(async() => {
   
 
   splitTextIntoSpans('.copy h1')
-  initializeCards()
-  
 
-  // gsap.set('h1 span', { y: -200})
-  // gsap.set('.slider .card:last-child h1 span', { y: 0})
+  await nextTick();
+
+  setTimeout(() => {
+    initializeCards()
+
+  }, 800)
+  
+  // push all h1 span upwards offscreen except for the last card
+  gsap.set('h1 span', { y: -200})
+  gsap.set('.slider .card:last-child h1 span', { y: 0})
 
   document.addEventListener('click', () => {
 
-    console.log('click')
+    // console.log('click')
 
     if (isAnimating) return
     isAnimating = true
 
     const slider = sliderRef.value;
 
+    // remove last card from array and store it, then get the next card
     lastCard = cards.pop();
     nextCard = cards[cards.length - 1];
 
-    console.log('lastCard spans', lastCard.querySelectorAll('h1 span'))
-    console.log('nextCard', nextCard)
-
-
-    const lastcardSpans = lastCard.querySelectorAll('h1 span')
-
+    
     // control the lastcard text sliding down and changing color
+    const lastcardSpans = lastCard.querySelectorAll('h1 span')
     gsap.to(lastcardSpans, {
       color: 'red',
       y: 200,
@@ -189,10 +196,12 @@ onMounted(async() => {
       duration: 0.75,
       ease: 'cubic',
       onComplete: () => {
+        // remove last card from DOM and add it to the beginning
         slider.prepend(lastCard)
 
+        // reinitialize cards, make its text upwards offscreen and set isAnimating to false
         initializeCards()
-        gsap.set(lastCard.querySelectorAll('h1 span'), { y: -200})
+        gsap.set(lastCard.querySelectorAll('h1 span'), { y: -200, color: '#dfe1c8',})
 
         setTimeout(() => {
           isAnimating = false
@@ -200,12 +209,13 @@ onMounted(async() => {
       }
     })
 
-    /* gsap.to(nextCard, {
+    // make the next card text slide down with staggered effect
+    gsap.to(nextCard.querySelectorAll('h1 span'), {
       y: 0,
       duration: 1,
       ease: 'cubic',
       stagger: 0.05,
-    }) */
+    })
     
   })
 })
