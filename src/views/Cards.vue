@@ -151,9 +151,6 @@ onMounted(async() => {
     }
   });
 
-  
-  
-
   splitTextIntoSpans('.copy h1')
 
   await nextTick();
@@ -297,6 +294,11 @@ footer{
 
   gap: 1em;
   z-index: 2;
+}
+
+footer p{
+  color: #dfe1c8;
+
 }
 
 .container {
