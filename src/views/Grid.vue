@@ -1,27 +1,39 @@
 <template>
   <div class="container">
-    <div class="header">
-      <h1>Smooth Scroll Grid</h1>
-      <p>Scroll down to experience smooth scrolling</p>
+    
+    <div class="hero">
+      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat blanditiis laboriosam ipsa impedit dolore voluptate sed quae dignissimos architecto? Minima quo nemo perferendis inventore dolore molestias, nisi mollitia. Eos quaerat consequuntur veritatis dicta deleniti iusto at quis.</p>
+      <p>test</p>
+      <h1>title</h1>
+    </div>
+
+    <!-- Grid Overlay (togglable) -->
+    <div class="grid-overlay" v-if="showGrid">
+      <div v-for="i in 12" :key="`grid-col-${i}`" class="grid-column"></div>
     </div>
     
-    <div class="grid">
-      <!-- Create grid items -->
-      <div class="grid-item" v-for="i in 20" :key="i">
-        <div class="card">
-          <h2>Item {{ i }}</h2>
-          <p>This is grid item {{ i }} with smooth scrolling</p>
-        </div>
-      </div>
-    </div>
+    <!-- Toggle Button -->
+    <button class="grid-toggle" @click="toggleGrid">
+      <!-- {{ showGrid ? 'Hide' : 'Show' }} Grid -->
+    </button>
+
   </div>
+
+
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import Lenis from '@studio-freight/lenis'
 
-let lenis = null;
+let lenis = null
+const showGrid = ref(false)
+
+// toggle grid overlay
+const toggleGrid = () => {
+  showGrid.value = !showGrid.value
+}
+
 
 // function to update scrolling
 const raf = (time) => {
@@ -31,7 +43,7 @@ const raf = (time) => {
 
 onMounted(() => {
   lenis = new Lenis({
-    duration: 1.2,
+    duration: 0.5,
     smoothWheel: true,
     smoothTouch: false,
     wheelMultiplier: 1,
@@ -58,69 +70,90 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /* Basic styles for demonstration */
+
 .container {
+  --gap: 0.8vw;
+  --padding-desktop: 1.2vw;
+
+
   width: 100%;
-  min-height: 300vh; /* Make page scrollable */
-  padding: 2rem;
+  min-height: 300vh;
+  font-size: 1.5vw;
+  padding: var(--padding-desktop);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gap);
+  
 }
 
-.header {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 2rem;
+
+p {
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  
 }
 
 h1 {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+  font-size: 3em;
+  font-weight: 900;
 }
 
-.grid {
+.hero{
+  grid-column: 7 / 13;
+
+  border: 1px solid #ddd;
+  height: 100vh;
+  margin-bottom: 1.2vw;
+  position: relative;
+  z-index: 1;
+}
+
+.hero p {
+  grid-column: 2 / span 10;
+}
+
+
+
+/* Grid Overlay Styles */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem 0;
-}
-
-.grid-item {
-  min-height: 300px;
-}
-
-.card {
-  height: 100%;
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-10px);
-}
-
-/* Make sure all elements use transforms for better Lenis performance */
-html.lenis {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gap);
+  padding: 0 var(--padding-desktop);
   pointer-events: none;
+  z-index: 9999;
+}
+
+.grid-column {
+  height: 100%;
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.grid-toggle {
+  position: fixed;
+  bottom: 1.2vw;
+  right: 1.2vw;
+  padding: 16px 16px;
+  outline: none;
+  height: 16px;
+  width: 16px;
+  background: #fff;
+  color: white;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+  z-index: 10000;
+
+
+
+  mix-blend-mode: difference;
 }
 </style>
