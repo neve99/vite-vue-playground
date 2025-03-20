@@ -21,7 +21,7 @@
 
     <!-- Grid Overlay (togglable) -->
     <div class="grid-overlay" v-if="showGrid">
-      <div v-for="i in 12" :key="`grid-col-${i}`" class="grid-column"></div>
+      <div v-for="i in 12" :key="`grid-col-${i}`" class="grid-column" ref="gridColumns"></div>
     </div>
     
     <!-- Toggle overlay button -->
@@ -36,14 +36,47 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import gsap from 'gsap'
 import Lenis from '@studio-freight/lenis'
 
 let lenis = null
 const showGrid = ref(false)
+const gridColumns = ref([])
 
 // toggle grid overlay
 const toggleGrid = () => {
   showGrid.value = !showGrid.value
+  
+  if (showGrid.value) {
+    // Wait for next DOM update
+    nextTick().then(() => {
+      gsap.set(gridColumns.value,{
+        y: -window.innerHeight,
+      })
+      gsap.to(gridColumns.value, {
+        y: 0,
+        duration: 0.5,
+        stagger: 0.02,
+        ease: 'power4.out',
+      })
+    })
+  } else {
+    // animate out before hiding
+    nextTick().then(() => {
+      console.log('animating out')
+      console.log(gridColumns.value)
+      gsap.to(gridColumns.value, {
+        y: window.innerHeight,
+        duration: 0.5,
+        stagger: 0.02,
+        ease: 'power4.in',
+        stagger: {
+          from: 'end',
+        }
+      })
+    })
+  }
+
 }
 
 
@@ -97,7 +130,7 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--gap);
   
-  background: fff;
+  background: #fff;
 }
 
 
@@ -109,6 +142,8 @@ p {
   
   overflow-wrap: break-word;
   hyphens: auto;
+
+  color: #000;
 }
 
 h1 {
@@ -220,7 +255,7 @@ header a {
 
 .grid-column {
   height: 100%;
-  background-color: rgba(255, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
