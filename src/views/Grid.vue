@@ -1,10 +1,20 @@
 <template>
   <div class="container">
+    <header>
+      <a href="#" class="header__link--home">somet.zip</a>
+      <a href="#" class="header__link--about">about</a>
+      <a href="#" class="header__link--index">index</a>
+    </header>
     
     <div class="hero">
-      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat blanditiis laboriosam ipsa impedit dolore voluptate sed quae dignissimos architecto? Minima quo nemo perferendis inventore dolore molestias, nisi mollitia. Eos quaerat consequuntur veritatis dicta deleniti iusto at quis.</p>
-      <p>test</p>
-      <h1>title</h1>
+      <div class="hero--top">
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat blanditiis laboriosam ipsa impedit dolore voluptate sed quae dignissimos architecto? Minima quo nemo perferendis inventore dolore molestias, nisi mollitia. Eos quaerat consequuntur veritatis dicta deleniti iusto at quis.
+        </p>
+        <p>test</p>
+      </div>
+      <div class="hero--bottom">
+        <h1>somet.zip</h1>
+      </div>
     </div>
 
     <!-- Grid Overlay (togglable) -->
@@ -12,7 +22,7 @@
       <div v-for="i in 12" :key="`grid-col-${i}`" class="grid-column"></div>
     </div>
     
-    <!-- Toggle Button -->
+    <!-- Toggle overlay button -->
     <button class="grid-toggle" @click="toggleGrid">
       <!-- {{ showGrid ? 'Hide' : 'Show' }} Grid -->
     </button>
@@ -53,9 +63,9 @@ onMounted(() => {
   requestAnimationFrame(raf)
 
   // Optional: add event listeners for scroll events
-  lenis.on('scroll', ({ scroll, limit, velocity, direction, progress }) => {
+  /* lenis.on('scroll', ({ scroll, limit, velocity, direction, progress }) => {
     console.log({ scroll, limit, velocity, direction, progress });
-  });
+  }); */
 })
 
 onBeforeUnmount(() => {
@@ -73,17 +83,19 @@ onBeforeUnmount(() => {
 
 .container {
   --gap: 0.8vw;
-  --padding-desktop: 1.2vw;
+  --padding: 1.2vw;
+  /* --border-color-helper: #ddd; */
 
 
   width: 100%;
   min-height: 300vh;
   font-size: 1.5vw;
-  padding: var(--padding-desktop);
+  padding: var(--padding);
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--gap);
   
+  background: fff;
 }
 
 
@@ -93,25 +105,84 @@ p {
   letter-spacing: -0.04em;
   line-height: 1.1;
   
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 h1 {
-  font-size: 3em;
+  font-size: 15.2em;
   font-weight: 900;
+  letter-spacing: -0.04em;
+
+  color: #000;
 }
 
-.hero{
-  grid-column: 7 / 13;
+a {
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: #000;
+}
 
-  border: 1px solid #ddd;
-  height: 100vh;
-  margin-bottom: 1.2vw;
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: var(--padding);
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gap);
+}
+
+.header__link--home {
+  grid-column: 1;
+}
+.header__link--about {
+  grid-column: 7;
+}
+.header__link--index {
+  justify-self: end;
+  grid-column: 12;
+  text-align: right;
+}
+
+
+.hero{
   position: relative;
+
+  grid-column: span 12;
+
+  border: 1px solid var(--border-color-helper);
+  height: calc(100vh - var(--padding));
   z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Push elements to top and bottom */
+
+}
+
+.hero div {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  gap: var(--gap);
+  border: 1px solid var(--border-color-helper);
+
 }
 
 .hero p {
-  grid-column: 2 / span 10;
+  grid-column: 7 / 13;
+  padding-top: calc(2 * var(--padding));
+}
+.hero h1 {
+  grid-column: 1 / 13;
+  grid-row: 3; /* Third row, which is at the bottom */
+  align-self: end; /* Align to the end of the row */
+  margin-bottom: var(--padding); /* Optional: add some bottom padding */
+
 }
 
 
@@ -126,7 +197,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: var(--gap);
-  padding: 0 var(--padding-desktop);
+  padding: 0 var(--padding);
   pointer-events: none;
   z-index: 9999;
 }
@@ -141,7 +212,7 @@ h1 {
   position: fixed;
   bottom: 1.2vw;
   right: 1.2vw;
-  padding: 16px 16px;
+  padding: 32px;
   outline: none;
   height: 16px;
   width: 16px;
@@ -151,9 +222,6 @@ h1 {
   border-radius: 0px;
   cursor: pointer;
   z-index: 10000;
-
-
-
   mix-blend-mode: difference;
 }
 </style>
