@@ -25,7 +25,7 @@
     </div>
     
     <!-- Toggle overlay button -->
-    <button class="grid-toggle" @click="toggleGrid">
+    <button class="grid-toggle" @click="toggleGrid" ref="gridToggle" @mouseover="toggleBtnRotation">
       <!-- {{ showGrid ? 'Hide' : 'Show' }} Grid -->
     </button>
 
@@ -42,12 +42,13 @@ import Lenis from '@studio-freight/lenis'
 let lenis = null
 const showGrid = ref(false)
 const gridColumns = ref([])
+const gridToggle = ref(null)
 
 // toggle grid overlay
 const toggleGrid = () => {
-  showGrid.value = !showGrid.value
-  
-  if (showGrid.value) {
+  if (!showGrid.value) {
+    // ENTERING: Set showGrid first, then animate after DOM update
+    showGrid.value = true;
     // Wait for next DOM update
     nextTick().then(() => {
       gsap.set(gridColumns.value,{
@@ -62,23 +63,30 @@ const toggleGrid = () => {
     })
   } else {
     // animate out before hiding
-    nextTick().then(() => {
-      console.log('animating out')
-      console.log(gridColumns.value)
-      gsap.to(gridColumns.value, {
-        y: window.innerHeight,
-        duration: 0.5,
-        stagger: 0.02,
-        ease: 'power4.in',
-        stagger: {
-          from: 'end',
-        }
-      })
+    gsap.to(gridColumns.value, {
+      y: window.innerHeight,
+      duration: 0.5,
+      ease: 'power4.in',
+      stagger: {
+        each: 0.02,
+        from: 'end',
+      },
+      onComplete: () => {
+        showGrid.value = false;
+      }
     })
   }
-
 }
-
+const toggleBtnRotation = () => {
+  gsap.set(gridToggle.value, {
+    rotate: 0,
+  })
+  gsap.to(gridToggle.value, {
+    rotate: 90,
+    duration: 0.5,
+    ease: 'power4.out',
+  })
+}
 
 // function to update scrolling
 const raf = (time) => {
@@ -130,7 +138,7 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--gap);
   
-  background: #fff;
+  background: #CCD0D1;
 }
 
 
@@ -151,7 +159,8 @@ h1 {
   font-weight: 900;
   letter-spacing: -0.04em;
 
-  color: #000;
+  color: #2a2a2a;
+  filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) ;
 }
 
 a {
