@@ -8,9 +8,11 @@
     
     <div class="hero">
       <div class="hero--top">
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat blanditiis laboriosam ipsa impedit dolore voluptate sed quae dignissimos architecto? Minima quo nemo perferendis inventore dolore molestias, nisi mollitia. Eos quaerat consequuntur veritatis dicta deleniti iusto at quis.
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat. 
         </p>
-        <p>test</p>
+        <div class="hero__color-block--green"></div>
+        <div class="hero__color-block--blue"></div>
+        <p>16379204648 <br>loremipsum@info.com</p>
       </div>
       <div class="hero--bottom">
         <h1>somet.zip</h1>
@@ -134,8 +136,13 @@ header {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: var(--gap);
+  mix-blend-mode: difference;  
+  z-index: 10000;
 }
+header a {
+  color: #fff;
 
+}
 .header__link--home {
   grid-column: 1;
 }
@@ -161,21 +168,30 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Push elements to top and bottom */
-
 }
 
 .hero div {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-auto-rows: min-content;
-  gap: var(--gap);
+  column-gap: var(--gap);
   border: 1px solid var(--border-color-helper);
 
 }
-
-.hero p {
+.hero__color-block--green {
+  grid-column: 7 / span 6;
+  height: 16px;
+  background-color: #00ff00;
+}
+.hero__color-block--blue {
+  grid-column: 7 / span 6;
+  height: 32px;
+  background-color: #008cff;
+}
+.hero--top p {
   grid-column: 7 / 13;
   padding-top: calc(2 * var(--padding));
+  padding-bottom: var(--padding);
 }
 .hero h1 {
   grid-column: 1 / 13;
@@ -212,7 +228,7 @@ header {
   position: fixed;
   bottom: 1.2vw;
   right: 1.2vw;
-  padding: 32px;
+  padding: 1em;
   outline: none;
   height: 16px;
   width: 16px;
