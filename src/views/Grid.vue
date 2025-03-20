@@ -53,9 +53,11 @@ const toggleGrid = () => {
     nextTick().then(() => {
       gsap.set(gridColumns.value,{
         y: -window.innerHeight,
+        width: '0',
       })
       gsap.to(gridColumns.value, {
         y: 0,
+        width: '100%',
         duration: 0.5,
         stagger: 0.02,
         ease: 'power4.out',
@@ -65,6 +67,7 @@ const toggleGrid = () => {
     // animate out before hiding
     gsap.to(gridColumns.value, {
       y: window.innerHeight,
+      width: '0.1%',
       duration: 0.5,
       ease: 'power4.in',
       stagger: {
@@ -127,6 +130,8 @@ onBeforeUnmount(() => {
 .container {
   --gap: 0.8vw;
   --padding: 1.2vw;
+  --text-color: #2a2a2a;
+  --bg-color: #CDD1D2;
   /* --border-color-helper: #ddd; */
 
 
@@ -138,7 +143,7 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--gap);
   
-  background: #CCD0D1;
+  background-color: var(--bg-color);
 }
 
 
@@ -151,7 +156,9 @@ p {
   overflow-wrap: break-word;
   hyphens: auto;
 
-  color: #000;
+  color: var(--text-color);
+
+  filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) ;
 }
 
 h1 {
@@ -159,8 +166,8 @@ h1 {
   font-weight: 900;
   letter-spacing: -0.04em;
 
-  color: #2a2a2a;
-  filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) ;
+  color: var(--text-color);
+  filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) blur(0.002em); ;
 }
 
 a {
@@ -169,6 +176,8 @@ a {
   letter-spacing: -0.04em;
   line-height: 1.1;
   color: #000;
+
+  filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) ;
 }
 
 header {
@@ -225,12 +234,12 @@ header a {
 .hero__color-block--green {
   grid-column: 7 / span 6;
   height: 16px;
-  background-color: #00ff00;
+  background-color: #fe4520;
 }
 .hero__color-block--blue {
   grid-column: 7 / span 6;
   height: 32px;
-  background-color: #008cff;
+  background-color: #E92E07;
 }
 .hero--top p {
   grid-column: 7 / 13;
@@ -264,7 +273,7 @@ header a {
 
 .grid-column {
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 0, 0, 0.1);
   border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
