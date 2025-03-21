@@ -34,6 +34,10 @@ const routes = [
     path: '/grid',
     component: () => import('../views/Grid.vue'),
   },
+  {
+    path: '/oblik-menu',
+    component: () => import('../views/oblik/OblikMenu.vue'),
+  },
 ]
 
 const router = createRouter({
