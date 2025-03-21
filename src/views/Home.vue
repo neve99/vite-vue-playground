@@ -10,6 +10,8 @@
       <router-link to="/matter">Matter</router-link>
       <router-link to="/line">Line Drawer</router-link>
       <router-link to="/cards">Cards</router-link>
+      <router-link to="/grid">Grid</router-link>
+
 
     </div>
     

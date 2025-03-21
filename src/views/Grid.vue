@@ -6,6 +6,7 @@
       <a href="#" class="header__link--index">index</a>
     </header>
     
+    <div class="grabber"></div>
     <div class="hero">
       <div class="hero--top">
         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat. 
@@ -132,6 +133,8 @@ onBeforeUnmount(() => {
   --padding: 1.2vw;
   --text-color: #2a2a2a;
   --bg-color: #CDD1D2;
+  --accent-color-1:#E92E07;
+  --accent-color-2:#fe4520;
   /* --border-color-helper: #ddd; */
 
 
@@ -150,7 +153,7 @@ onBeforeUnmount(() => {
 p {
   font-size: 1em;
   font-weight: 700;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   line-height: 1.1;
   
   overflow-wrap: break-word;
@@ -292,5 +295,17 @@ header a {
   cursor: pointer;
   z-index: 10000;
   mix-blend-mode: difference;
+}
+
+.grabber {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 2em;
+  height: 2em;
+  background-color: var(--accent-color-2);
+  z-index: 9999;
+  mix-blend-mode: darken;
 }
 </style>
