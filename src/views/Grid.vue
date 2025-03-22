@@ -5,8 +5,11 @@
       <a href="#" class="header__link--about">about</a>
       <a href="#" class="header__link--index">index</a>
     </header>
-    
-    <div class="grabber"></div>
+    <div class="focus">
+      <div class="grabber" ref="grabberRef"></div>
+      <div class="focus__line--horizontal"></div>
+      <div class="focus__line--vertical"></div>
+    </div>
     <div class="hero">
       <div class="hero--top">
         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat. 
@@ -16,7 +19,7 @@
         <p>16379204648 <br>loremipsum@info.com</p>
       </div>
       <div class="hero--bottom">
-        <h1>somet.zip</h1>
+        <h1 ref="heroTitle" class="hero--title">somet.zip</h1>
       </div>
     </div>
 
@@ -38,12 +41,19 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import gsap from 'gsap'
+import { Draggable } from 'gsap/Draggable'
+gsap.registerPlugin(Draggable)
 import Lenis from '@studio-freight/lenis'
 
 let lenis = null
 const showGrid = ref(false)
 const gridColumns = ref([])
 const gridToggle = ref(null)
+
+const grabberRef = ref(null)
+const grabberPosition = ref({ x: 40.25, y:18.01 })
+
+const heroTitle = ref(null)
 
 // toggle grid overlay
 const toggleGrid = () => {
@@ -98,6 +108,41 @@ const raf = (time) => {
   requestAnimationFrame(raf)
 }
 
+//update focus lines
+const updateFoucusLines = () => {
+  // get current position in pixels
+  const rect = grabberRef.value.getBoundingClientRect()
+  const grabberCenterX = rect.left + rect.width / 2
+  const grabberCenterY = rect.top + rect.height / 2
+
+  // convert to vw/vh
+  const vw = window.innerWidth / 100
+  const vh = window.innerHeight / 100
+
+  // update position
+  grabberPosition.value = {
+    x: grabberCenterX / vw,
+    y: grabberCenterY / vh,
+  }
+
+  // console.log(grabberPosition.value.x)
+
+  // update lines
+  gsap.set ('.focus__line--horizontal', {
+    top: `${grabberPosition.value.y}vh`
+  })
+
+  gsap.set ('.focus__line--vertical', {
+    left: `${grabberPosition.value.x}vw`
+  })
+
+  // update blur
+  gsap.to ('.hero--title', {
+    filter: `blur(${Math.abs(grabberPosition.value.x - 40.25) * 0.01}em)`,
+    duration: 0.5,
+  })
+}
+
 onMounted(() => {
   lenis = new Lenis({
     duration: 0.5,
@@ -113,6 +158,26 @@ onMounted(() => {
   /* lenis.on('scroll', ({ scroll, limit, velocity, direction, progress }) => {
     console.log({ scroll, limit, velocity, direction, progress });
   }); */
+
+  Draggable.create(grabberRef.value, {
+    type: 'x, y',
+    bounds: '.focus',
+    onDrag: updateFoucusLines,
+    /* onPress: function() {
+      gsap.to(this.target, {
+        scale: 1.2,
+        duration: 0.3,
+        ease: 'power4.out',
+      })
+    },
+    onRelease: function() {
+      gsap.to(this.target, {
+        scale: 1,
+        duration: 0.3,
+        ease: 'power4.out',
+      })
+    } */
+  })
 })
 
 onBeforeUnmount(() => {
@@ -132,7 +197,8 @@ onBeforeUnmount(() => {
   --gap: 0.8vw;
   --padding: 1.2vw;
   --text-color: #2a2a2a;
-  --bg-color: #CDD1D2;
+  --bg-color: #f5f5f5;
+  /* --bg-color: #CDD1D2; */
   --accent-color-1:#E92E07;
   --accent-color-2:#fe4520;
   /* --border-color-helper: #ddd; */
@@ -162,6 +228,8 @@ p {
   color: var(--text-color);
 
   filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) ;
+
+
 }
 
 h1 {
@@ -170,7 +238,7 @@ h1 {
   letter-spacing: -0.04em;
 
   color: var(--text-color);
-  filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) blur(0.002em); ;
+  
 }
 
 a {
@@ -180,9 +248,26 @@ a {
   line-height: 1.1;
   color: #000;
 
-  filter: drop-shadow(0 0 0.03em rgba(0, 0, 0, 0.7)) ;
+  filter: drop-shadow(0 0 0.03em rgba(255, 255, 255, 0.7)) ;
+}
+/* Custom text selection styling */
+::selection {
+  background-color: var(--accent-color-1); /* Red background for selected text */
+  color: white; /* White text when selected */
+  text-shadow: none; /* Remove any text shadows when selected */
+  filter: none !important; /* This removes any filter effects including drop shadows */
+  -webkit-filter: none !important;
+  
 }
 
+/* For Firefox which uses a different pseudo-element */
+::-moz-selection {
+  background-color: var(--accent-color-2);
+  color: white;
+  text-shadow: none;
+  filter: none !important; /* This removes any filter effects including drop shadows */
+  -webkit-filter: none !important;
+}
 header {
   position: fixed;
   top: 0;
@@ -197,6 +282,7 @@ header {
 }
 header a {
   color: #fff;
+  user-select: none;
 
 }
 .header__link--home {
@@ -219,6 +305,7 @@ header a {
 
   border: 1px solid var(--border-color-helper);
   height: calc(100vh - var(--padding));
+  max-height: 70vw;
   z-index: 1;
 
   display: flex;
@@ -236,12 +323,12 @@ header a {
 }
 .hero__color-block--green {
   grid-column: 7 / span 6;
-  height: 16px;
+  height: 1em;
   background-color: #fe4520;
 }
 .hero__color-block--blue {
   grid-column: 7 / span 6;
-  height: 32px;
+  height: 1em;
   background-color: #E92E07;
 }
 .hero--top p {
@@ -254,7 +341,7 @@ header a {
   grid-row: 3; /* Third row, which is at the bottom */
   align-self: end; /* Align to the end of the row */
   margin-bottom: var(--padding); /* Optional: add some bottom padding */
-
+  filter: drop-shadow(0 0 0.00em rgba(0, 0, 0, 0.7)) blur(0.005em); 
 }
 
 
@@ -295,17 +382,51 @@ header a {
   cursor: pointer;
   z-index: 10000;
   mix-blend-mode: difference;
+
+  filter: drop-shadow(0 0 0.03em rgba(255, 255, 255, 0.7)) ;
 }
 
-.grabber {
+.focus{
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
+  z-index: 9999;
+  mix-blend-mode: hard-light;
+  pointer-events: none;
+}
+.grabber {
+  position: fixed;
+  top: 18.01vw;
+  left: 40.32vw;
+  right: 0;
   width: 2em;
   height: 2em;
-  background-color: var(--accent-color-2);
+  background-color: var(--accent-color-1);
   z-index: 9999;
-  mix-blend-mode: darken;
+  pointer-events: auto;
+  filter: blur(0em);
+
+}
+
+.focus__line--horizontal {
+  position: fixed;
+  top: calc(18.00vw + 1em);
+  left: 0;
+  height: 2px;
+  width: 100vw;
+  background-color: var(--accent-color-1);
+  z-index: 9999;
+}
+
+.focus__line--vertical {
+  position: fixed;
+  top: 0;
+  left: calc(40.25vw + 1em);
+  width: 2px;
+  height: 100vh;
+  background-color: var(--accent-color-1);
+  z-index: 9999;
 }
 </style>
