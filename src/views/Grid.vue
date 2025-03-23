@@ -20,6 +20,18 @@
       </div>
       <div class="hero--bottom">
         <h1 ref="heroTitle" class="hero--title">somet.zip</h1>
+        <div class="hero--subtitle">
+          <h2 class="hero--subtitle--1">
+            Design & Development
+          </h2>
+          <h2 class="hero--subtitle--2">
+            Based in Bremen, DE
+          </h2>
+          <h2 class="hero--subtitle--3">
+            Study at HFK Bremen
+          </h2>
+        </div>
+        
       </div>
     </div>
 
@@ -138,7 +150,12 @@ const updateFoucusLines = () => {
 
   // update blur
   gsap.to ('.hero--title', {
-    filter: `blur(${Math.abs(grabberPosition.value.x - 40.25) * 0.01}em)`,
+    filter: `blur(${Math.abs(grabberPosition.value.x - 40.25) * 0.005}em)`,
+    duration: 0.5,
+  })
+
+  gsap.to ('.hero--subtitle', {
+    filter: `blur(${Math.abs(grabberPosition.value.y - 18.00) * 0.01}em)`,
     duration: 0.5,
   })
 }
@@ -239,6 +256,16 @@ h1 {
 
   color: var(--text-color);
   
+}
+
+h2 {
+  font-size: 5.2em;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: .8;
+  color: #a8a8a8;
+  /* uppercase */
+  text-transform: uppercase;
 }
 
 a {
@@ -342,8 +369,40 @@ header a {
   align-self: end; /* Align to the end of the row */
   margin-bottom: var(--padding); /* Optional: add some bottom padding */
   filter: drop-shadow(0 0 0.00em rgba(0, 0, 0, 0.7)) blur(0.005em); 
+
+  z-index: 2;
+}
+.hero--subtitle {
+  position: absolute;
+  top: 26vw;
+  grid-column: 1 / 13;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: min-content;
+  column-gap: var(--gap);
+  row-gap: 0;
+  padding-bottom: var(--padding);
+  z-index: -1;
+  filter: blur(0.25em);
+
 }
 
+.hero--subtitle--1 {
+  grid-column: 1 / 13;
+  grid-row: 1;
+
+}
+.hero--subtitle--2 {
+  grid-column: 1 / 13;
+  grid-row: 2;
+
+}
+.hero--subtitle--3 {
+  grid-column: 1 / 13;
+  grid-row: 3;
+
+}
 
 
 /* Grid Overlay Styles */
