@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" ref="container">
     <header>
       <a href="#" class="header__link--home">somet.zip</a>
       <a href="#" class="header__link--about">about</a>
@@ -12,25 +12,26 @@
     </div>
     <div class="hero">
       <div class="hero--top">
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi ipsam totam ratione blanditiis saepe consequuntur cumque laboriosam tenetur dolor, sed id voluptatem, placeat, deserunt reiciendis voluptatibus! Ab reiciendis, quas inventore, molestias, accusamus saepe cum qui itaque molestiae obcaecati ut. Consectetur, tempore quaerat aliquam unde, temporibus fugiat necessitatibus ab iste dignissimos deserunt perspiciatis voluptatibus facere veritatis dolore ipsam. Culpa, voluptatibus commodi voluptates officiis assumenda qui dicta doloribus delectus officia ab harum perspiciatis repellat. 
+        <p>Hi, my name is Yang, I am a multi-disciplinary designer and developer based in Bremen. Currently available for freelance work.
         </p>
-        <div class="hero__color-block--green"></div>
-        <div class="hero__color-block--blue"></div>
-        <p>16379204648 <br>loremipsum@info.com</p>
-      </div>
-      <div class="hero--bottom">
-        <h1 ref="heroTitle" class="hero--title">somet.zip</h1>
+        <!-- <div class="hero__color-block--green"></div>
+        <div class="hero__color-block--blue"></div> -->
+        <p class="contact">ig: @somet.zip <br>email: yanliu@hfk-bremen.de</p>
         <div class="hero--subtitle">
           <h2 class="hero--subtitle--1">
             Design & Development
           </h2>
           <h2 class="hero--subtitle--2">
-            Based in Bremen, DE
+            Based in Bremen
           </h2>
           <h2 class="hero--subtitle--3">
             Study at HFK Bremen
           </h2>
         </div>
+      </div>
+      <div class="hero--bottom">
+        <h1 ref="heroTitle" class="hero--title">somet.zip</h1>
+        
         
       </div>
     </div>
@@ -56,16 +57,28 @@ import gsap from 'gsap'
 import { Draggable } from 'gsap/Draggable'
 gsap.registerPlugin(Draggable)
 import Lenis from '@studio-freight/lenis'
+import { parse } from 'vue/compiler-sfc'
 
 let lenis = null
+
+const container = ref(null)
 const showGrid = ref(false)
 const gridColumns = ref([])
 const gridToggle = ref(null)
-
 const grabberRef = ref(null)
 const grabberPosition = ref({ x: 40.25, y:18.01 })
 
+const grabberTop = ref(null)
+const grabberLeft = ref(null)
+
 const heroTitle = ref(null)
+
+// get css variable
+const getCssVar = (name) => {
+  if (!container.value) return
+  const styles = getComputedStyle(container.value)
+  return styles.getPropertyValue(name).trim()
+}
 
 // toggle grid overlay
 const toggleGrid = () => {
@@ -81,7 +94,7 @@ const toggleGrid = () => {
       gsap.to(gridColumns.value, {
         y: 0,
         width: '100%',
-        duration: 0.5,
+        duration: 1.3,
         stagger: 0.02,
         ease: 'power4.out',
       })
@@ -91,7 +104,7 @@ const toggleGrid = () => {
     gsap.to(gridColumns.value, {
       y: window.innerHeight,
       width: '0.1%',
-      duration: 0.5,
+      duration: 0.8,
       ease: 'power4.in',
       stagger: {
         each: 0.02,
@@ -121,11 +134,11 @@ const raf = (time) => {
 }
 
 //update focus lines
-const updateFoucusLines = () => {
+const updateFocusLines = () => {
   // get current position in pixels
   const rect = grabberRef.value.getBoundingClientRect()
-  const grabberCenterX = rect.left + rect.width / 2
-  const grabberCenterY = rect.top + rect.height / 2
+  const grabberCenterX = rect.left + rect.width / 2 - 1
+  const grabberCenterY = rect.top + rect.height / 2 - 1
 
   // convert to vw/vh
   const vw = window.innerWidth / 100
@@ -140,6 +153,9 @@ const updateFoucusLines = () => {
   // console.log(grabberPosition.value.x)
 
   // update lines
+  const grabberTopValue = parseFloat(grabberTop.value)
+  const grabberLeftValue = parseFloat(grabberLeft.value)
+
   gsap.set ('.focus__line--horizontal', {
     top: `${grabberPosition.value.y}vh`
   })
@@ -148,19 +164,29 @@ const updateFoucusLines = () => {
     left: `${grabberPosition.value.x}vw`
   })
 
-  // update blur
+  // update blur effect and opacity
   gsap.to ('.hero--title', {
-    filter: `blur(${Math.abs(grabberPosition.value.x - 40.25) * 0.005}em)`,
+    filter: `blur(${Math.abs(grabberPosition.value.x - grabberTopValue) * 0.005}em)`,
+    opacity: 1 - Math.abs(grabberPosition.value.x - grabberTopValue) * 0.03,
     duration: 0.5,
   })
 
   gsap.to ('.hero--subtitle', {
-    filter: `blur(${Math.abs(grabberPosition.value.y - 18.00) * 0.01}em)`,
+    filter: `blur(${Math.abs(grabberPosition.value.y - grabberLeftValue) * 0.01}em)`,
     duration: 0.5,
   })
+  
+
+
 }
 
 onMounted(() => {
+  //access css variables
+  grabberTop.value = getCssVar('--grabber-top')
+  grabberLeft.value = getCssVar('--grabber-left')
+
+
+  // Initialize Lenis instance
   lenis = new Lenis({
     duration: 0.5,
     smoothWheel: true,
@@ -179,7 +205,7 @@ onMounted(() => {
   Draggable.create(grabberRef.value, {
     type: 'x, y',
     bounds: '.focus',
-    onDrag: updateFoucusLines,
+    onDrag: updateFocusLines,
     /* onPress: function() {
       gsap.to(this.target, {
         scale: 1.2,
@@ -190,7 +216,7 @@ onMounted(() => {
     onRelease: function() {
       gsap.to(this.target, {
         scale: 1,
-        duration: 0.3,
+        duration: 0.3,s
         ease: 'power4.out',
       })
     } */
@@ -213,6 +239,12 @@ onBeforeUnmount(() => {
 .container {
   --gap: 0.8vw;
   --padding: 1.2vw;
+
+  --grabber-top: 50vh;
+  --grabber-left: 25.4vw;
+  /* --grabber-left: calc(25vw + 0.4vw) ; */
+  --grabber-color: #E92E07;
+
   --text-color: #2a2a2a;
   --bg-color: #f5f5f5;
   /* --bg-color: #CDD1D2; */
@@ -264,8 +296,6 @@ h2 {
   letter-spacing: -0.04em;
   line-height: .8;
   color: #a8a8a8;
-  /* uppercase */
-  text-transform: uppercase;
 }
 
 a {
@@ -306,10 +336,12 @@ header {
   gap: var(--gap);
   mix-blend-mode: difference;  
   z-index: 10000;
+  pointer-events: none;
 }
 header a {
   color: #fff;
   user-select: none;
+  pointer-events: auto;
 
 }
 .header__link--home {
@@ -331,8 +363,9 @@ header a {
   grid-column: span 12;
 
   border: 1px solid var(--border-color-helper);
-  height: calc(100vh - var(--padding));
+  height: calc(100vh - 0.2em);
   max-height: 70vw;
+  min-height: 20vw;
   z-index: 1;
 
   display: flex;
@@ -358,25 +391,39 @@ header a {
   height: 1em;
   background-color: #E92E07;
 }
+.hero--top{
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  border: #000 1px solid;
+}
+.hero--bottom{
+  position: absolute;
+  bottom: 0;
+}
 .hero--top p {
   grid-column: 7 / 13;
-  padding-top: calc(2 * var(--padding));
-  padding-bottom: var(--padding);
+  padding-top: calc(2 * var(--padding) + 10vh);
+  /* padding-bottom: var(--padding); */
+  pointer-events: auto;
+}
+p.contact {
+  /* padding-top: 5vw; */
 }
 .hero h1 {
   grid-column: 1 / 13;
   grid-row: 3; /* Third row, which is at the bottom */
   align-self: end; /* Align to the end of the row */
   margin-bottom: var(--padding); /* Optional: add some bottom padding */
-  filter: drop-shadow(0 0 0.00em rgba(0, 0, 0, 0.7)) blur(0.005em); 
+  filter: drop-shadow(0 0 0.00em rgba(0, 0, 0, 0.7)) blur(0.00em); 
 
   z-index: 2;
 }
 .hero--subtitle {
   position: absolute;
-  top: 26vw;
+  top: 2vw;
   grid-column: 1 / 13;
-  grid-row: 3;
+
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: min-content;
@@ -385,6 +432,8 @@ header a {
   padding-bottom: var(--padding);
   z-index: -1;
   filter: blur(0.25em);
+
+  text-transform: uppercase;
 
 }
 
@@ -422,7 +471,7 @@ header a {
 
 .grid-column {
   height: 100%;
-  background-color: rgba(255, 0, 0, 0.1);
+  /* background-color: rgba(255, 0, 0, 0.1); */
   border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
@@ -457,12 +506,14 @@ header a {
 }
 .grabber {
   position: fixed;
-  top: 18.01vw;
-  left: 40.32vw;
+  top: var(--grabber-top);
+  left: var(--grabber-left);
   right: 0;
-  width: 2em;
-  height: 2em;
-  background-color: var(--accent-color-1);
+  width: 6em;
+  height: 6em;
+  transform: translate(-50%, -50%);
+  background-color: #E92E07;
+
   z-index: 9999;
   pointer-events: auto;
   filter: blur(0em);
@@ -470,22 +521,32 @@ header a {
 }
 
 .focus__line--horizontal {
+  /* display: none; */
   position: fixed;
-  top: calc(18.00vw + 1em);
+  top: var(--grabber-top);
   left: 0;
-  height: 2px;
+  height: 0px;
   width: 100vw;
-  background-color: var(--accent-color-1);
+  /* background-color: #E92E07; */
+  border-bottom: var(--grabber-color) 1px dashed;
+
+
   z-index: 9999;
 }
 
 .focus__line--vertical {
+  /* display: none; */
   position: fixed;
   top: 0;
-  left: calc(40.25vw + 1em);
-  width: 2px;
+  left: var(--grabber-left);
+  width: 0px;
   height: 100vh;
-  background-color: var(--accent-color-1);
+  /* background-color: #E92E07; */
+  border-left: var(--grabber-color) 1px dashed;
+
+  /* background-color: #8d1801; */
+  /* background-color: #00831c; */
+
   z-index: 9999;
 }
 </style>
