@@ -9,7 +9,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import * as THREE from 'three';
 
+const isMouseDown = ref(false);
+
 const threeContainer = ref(null);
+
+const hue = ref(150);
 
 // three.js variables
 let scene, camera, renderer, controls, line;
@@ -51,10 +55,19 @@ const initThree = () => {
   // create shape
   
   // add event listener
-  window.addEventListener('click', (event) => {
-    const x = event.clientX
-    const y = event.clientY
-    createShape(x, y);
+  window.addEventListener('mousemove', (event) => {
+    if (isMouseDown.value) {
+      const x = event.clientX
+      const y = event.clientY
+      createShape(x, y);
+    }
+  })
+  window.addEventListener('touchmove', (event) => {
+    if (isMouseDown.value) {
+      const x = event.clientX
+      const y = event.clientY
+      createShape(x, y);
+    }
   })
   
   // Start rendering
@@ -76,8 +89,11 @@ const animate = () => {
     shape.rotation.y += 0.01;
   } */
 
+
+
   shapes.forEach(shape => {
     shape.rotation.x += 0.01
+    shape.position.z -= 1
   })
 
   renderer.render(scene, camera);
@@ -85,10 +101,20 @@ const animate = () => {
 
 // create shape
 const createShape = (x, y) => {
-  const geometry = new THREE.ConeGeometry(10, 30, 32)
+  const geometries = [
+    new THREE.BoxGeometry(10, 10, 10),
+    new THREE.SphereGeometry(10, 32, 32),
+    new THREE.ConeGeometry(10, 30, 32),
+    new THREE.TorusGeometry(10, 3, 16, 100)
+  ]
+
+  const geometry = geometries[Math.floor(Math.random() * geometries.length)]
+
+  const emissiveColor = new THREE.Color('hsl(' + hue.value + ', 100%, 50%)')
+
   const material = new THREE.MeshLambertMaterial({ 
     color: 0xffffff,
-    emissive: 0xff0000,
+    emissive: emissiveColor,
     // wireframe: true
   }) 
   shape = new THREE.Mesh(geometry, material)
@@ -101,6 +127,12 @@ const createShape = (x, y) => {
 
   // add it to the shapes array so we can rotate it
   shapes.push(shape)
+
+  // increment hue
+  hue.value += 1
+  if (hue.value > 360) {
+    hue.value = 0
+  }
 }
 
 // handle resize
@@ -125,6 +157,9 @@ const cleanup = () => {
 
   window.removeEventListener('resize', onResize);
   window.removeEventListener('click', createShape);
+  window.removeEventListener('mousemove', createShape);
+  window.removeEventListener('mousedown', () => {});
+  window.removeEventListener('mouseup', () => {});
 }
 
 onMounted(() => {
@@ -133,6 +168,18 @@ onMounted(() => {
   }
 })
 
+window.addEventListener('mousedown', () => {
+  isMouseDown.value = true;
+})
+window.addEventListener('mouseup', () => {
+  isMouseDown.value = false;
+})
+window.addEventListener('touchstart', () => {
+  isMouseDown.value = true;
+})
+window.addEventListener('touchend', () => {
+  isMouseDown.value = false;
+})
 // MISSING - Cleanup on unmount
 onBeforeUnmount(() => {
   cleanup();
