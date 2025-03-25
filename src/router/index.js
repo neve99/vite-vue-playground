@@ -38,6 +38,10 @@ const routes = [
     path: '/oblik-menu',
     component: () => import('../views/oblik/OblikMenu.vue'),
   },
+  {
+    path: '/planet',
+    component: () => import('../views/Planet.vue'),
+  },
 ]
 
 const router = createRouter({

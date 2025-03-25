@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="container">
     <!-- three.js goes here -->
     <div ref="threeContainer" class="three-container"></div>
   </section>
@@ -195,4 +195,6 @@ onBeforeUnmount(() => {
   height: 100vh;
   overflow: hidden;
 }
+
+
 </style>
