@@ -30,6 +30,12 @@
 </template>
 
 <script setup>
+  import { ref, onMounted } from 'vue'
+  import gsap from 'gsap'
+
+  
+
+  
 </script>
 
 <style scoped>
@@ -61,6 +67,10 @@
 
     position: fixed;
     background-color: #fff;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
   }
 
@@ -107,6 +117,6 @@
   .sections{
     position: fixed;
     top: 25vh;
-    left: -50vw;
+    left: -100vw;
   }
 </style>

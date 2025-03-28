@@ -11,6 +11,8 @@
       <router-link to="/line">Line Drawer</router-link>
       <router-link to="/cards">Cards</router-link>
       <router-link to="/grid">Grid</router-link>
+      <router-link to="/planet">Planet</router-link>
+
 
 
     </div>
