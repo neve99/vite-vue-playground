@@ -15,6 +15,7 @@ const threeContainer = ref(null);
 // three.js variables
 let scene, camera, renderer, controls, line;
 let animationFrameId; // For cleanup
+let planet // define global variable for planet
 
 const initThree = () => {
   // scene
@@ -31,11 +32,24 @@ const initThree = () => {
   camera.position.z = -3000;
   camera.lookAt(scene.position)
 
-  // light
-  const light = new THREE.DirectionalLight(0xffffff, 2);
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-  light.position.set(0, 1000, -1000);
-  scene.add(light, ambientLight);
+  // lights
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(1000, 1000, -1000);
+  const lightHelper = new THREE.DirectionalLightHelper(light, 50);
+  scene.add(light, lightHelper);
+
+  /* const pointLight = new THREE.PointLight(0xff0000, 1, 1000);
+  pointLight.position.set(-200, -200, -800);
+  const pointLightHelper = new THREE.PointLightHelper(pointLight, 50);
+  scene.add(pointLight, pointLightHelper); */
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
+  scene.add(ambientLight);
+
+  /* const hemiLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+  hemiLight.position.set(0, 1000, 0);
+  const hemiLightHelper = new THREE.HemisphereLightHelper( hemiLight, 50 );
+  scene.add( hemiLight, hemiLightHelper ); */
 
   // renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -54,22 +68,32 @@ const animate = () => {
   camera.lookAt(scene.position);
   animationFrameId = requestAnimationFrame(animate);
   renderer.render(scene, camera);
+
+  planet.rotation.y += 0.001;
+
+
 }
 
 const makePlanet = () => {
   // Create a sphere geometry with a radius of 800 and 128 segments, and put a material
   const geometry = new THREE.SphereGeometry(800, 128, 128)
+  const textureLoader = new THREE.TextureLoader();
+  const texture = textureLoader.load('/images/matter/somet-1510x307.png');
+
   const material = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     roughness: 0.5,
     metalness: 0.5,
-    wireframe: false
+    wireframe: false,
+    map: texture,
   })
-
+  
   // Create a mesh with the geometry and material, add it to the scene
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh)
 
+  return mesh
+  
 
 }
 
@@ -80,7 +104,7 @@ const onResize = () => {
   renderer.setSize(threeContainer.value.clientWidth, threeContainer.value.clientHeight);
 }
 
-// MISSING - Handle cleanup
+// Handle cleanup
 const cleanup = () => {
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
@@ -99,10 +123,10 @@ const cleanup = () => {
 onMounted(() => {
   initThree();
 
+  planet = makePlanet();
   
   // Start the animation loop
   animate();
-  makePlanet();
   
   // Add event listeners
   window.addEventListener('resize', onResize);
