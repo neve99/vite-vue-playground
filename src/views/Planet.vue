@@ -13,7 +13,7 @@ import * as THREE from 'three';
 const threeContainer = ref(null);
 
 // three.js variables
-let scene, camera, renderer, controls, line;
+let scene, camera, renderer, controls, line, clock;
 let animationFrameId; // For cleanup
 let planet // define global variable for planet
 
@@ -60,16 +60,33 @@ const initThree = () => {
   // Add renderer to the DOM
   threeContainer.value.appendChild(renderer.domElement);
 
+  // Add a clock for delta time
+  clock = new THREE.Clock();
+
 
 }
 
 const animate = () => {
+  // Calculate delta time
+  const delta = clock.getDelta()
+  const elapsedTime = clock.getElapsedTime()
+
   // Update the camera position
   camera.lookAt(scene.position);
   animationFrameId = requestAnimationFrame(animate);
   renderer.render(scene, camera);
 
-  planet.rotation.y += 0.001;
+  if (planet) {
+    // Base rotation
+    planet.rotation.y -= 0.2 * delta; // Smoother rotation based on time
+    
+    // Add slight wobble
+    planet.rotation.x = Math.sin(elapsedTime * 0.3) * 1;
+    
+    // Optional: Add slight position movement
+    planet.position.y = Math.sin(elapsedTime * 0.5) * 30;
+
+  }
 
 
 }
