@@ -15,7 +15,13 @@ const threeContainer = ref(null);
 // three.js variables
 let scene, camera, renderer, controls, line, clock;
 let animationFrameId; // For cleanup
-let planet // define global variable for planet
+let planet, ring1, ring2, ring3 // define global variable for planet
+
+// Define world axes
+const worldYAxis = new THREE.Vector3(0, 1, 0);
+const worldXAxis = new THREE.Vector3(1, 0, 0);
+const worldZAxis = new THREE.Vector3(0, 0, 1);
+
 
 const initThree = () => {
   // scene
@@ -76,7 +82,7 @@ const animate = () => {
   animationFrameId = requestAnimationFrame(animate);
   renderer.render(scene, camera);
 
-  /* if (planet) {
+  if (planet) {
     // Base rotation
     planet.rotation.y -= 0.2 * delta; // Smoother rotation based on time
     
@@ -84,9 +90,19 @@ const animate = () => {
     planet.rotation.x = Math.sin(elapsedTime * 0.3) * 1;
     
     // Optional: Add slight position movement
-    planet.position.y = Math.sin(elapsedTime * 0.5) * 30;
+    // planet.position.y = Math.sin(elapsedTime * 0.5) * 30;
 
-  } */
+    /* ring1.rotation.y -= 0.2 * delta;
+    ring2.rotation.x -= 0.2 * delta;
+    ring3.rotation.y -= 0.1 * delta;
+     */
+    ring1.rotateOnWorldAxis(worldYAxis, 0.2 * delta);
+    ring2.rotateOnWorldAxis(worldXAxis, - 0.1 * delta);
+    // ring1.geometry.rotateY(0.2 * delta);
+    ring3.rotation.y -= 0.1 * delta;
+
+
+  }
 
 
 }
@@ -112,6 +128,26 @@ const makePlanet = () => {
   return mesh
   
 
+}
+
+const makeRing = (width, color) => {
+  const geometry = new THREE.TorusGeometry(width, 5, 16, 100)
+  const material = new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: 0xff0000,
+    emissiveIntensity: 0.5,
+    transparent: true,
+    roughness: 0.5,
+    metalness: 0.5,
+    wireframe: false,
+  })
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.rotation.x = Math.PI / 2.5;
+  // mesh.rotation.y = Math.PI / 10;
+  mesh.geometry.rotateY(Math.PI / 10);
+
+  scene.add(mesh)
+  return mesh
 }
 
 // handle resize
@@ -142,20 +178,23 @@ onMounted(() => {
   initThree();
 
   planet = makePlanet();
+  ring1 = makeRing(1200, 0xf1f1f1);
+  ring2 = makeRing(1400, 0xf1f1f1);
+  ring3 = makeRing(1600, 0xf1f1f1);
+
+
   
   // Start the animation loop
   animate();
   
   // Add event listeners
   window.addEventListener('resize', onResize);
-  // window.addEventListener('mousemove', onMouseMove);
-  // window.addEventListener('mousedown', onMouseDown);
-  // window.addEventListener('mouseup', onMouseUp);
-  window.addEventListener('scroll', () => {
+
+  // alternative: add scroll event listener
+  /* window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
     planet.rotation.y = scrollY * 0.002
-
-  })
+  }) */
 })
 
 onBeforeUnmount(() => {
