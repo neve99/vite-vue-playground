@@ -76,7 +76,7 @@ const animate = () => {
   animationFrameId = requestAnimationFrame(animate);
   renderer.render(scene, camera);
 
-  if (planet) {
+  /* if (planet) {
     // Base rotation
     planet.rotation.y -= 0.2 * delta; // Smoother rotation based on time
     
@@ -86,7 +86,7 @@ const animate = () => {
     // Optional: Add slight position movement
     planet.position.y = Math.sin(elapsedTime * 0.5) * 30;
 
-  }
+  } */
 
 
 }
@@ -103,7 +103,7 @@ const makePlanet = () => {
     metalness: 0.5,
     wireframe: false,
     map: texture,
-  })
+  }) 
   
   // Create a mesh with the geometry and material, add it to the scene
   const mesh = new THREE.Mesh(geometry, material);
@@ -120,6 +120,7 @@ const onResize = () => {
   camera.updateProjectionMatrix();
   renderer.setSize(threeContainer.value.clientWidth, threeContainer.value.clientHeight);
 }
+
 
 // Handle cleanup
 const cleanup = () => {
@@ -150,6 +151,11 @@ onMounted(() => {
   // window.addEventListener('mousemove', onMouseMove);
   // window.addEventListener('mousedown', onMouseDown);
   // window.addEventListener('mouseup', onMouseUp);
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    planet.rotation.y = scrollY * 0.002
+
+  })
 })
 
 onBeforeUnmount(() => {
@@ -159,6 +165,11 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.container {
+  position: relative;
+  width: 100%;
+  height: 4000px;
+}
 .three{
   position: fixed;
   top: 0;
