@@ -1,9 +1,20 @@
+<!-- 
+
+
+memo
+1. redesign the header (changed the text)
+2, graycolor blur?? really?? (yes)
+3. the dot with the grid: get rid of it (done)
+
+
+-->
+
 <template>
   <div class="container" ref="container">
     <header>
       <a href="#" class="header__link--home">somet.zip</a>
-      <a href="#" class="header__link--about">about</a>
-      <a href="#" class="header__link--index">index</a>
+      <a href="#" class="header__link--about">index</a>
+      <a href="#" class="header__link--index">more</a>
     </header>
     <div class="focus">
       <div class="grabber" ref="grabberRef"></div>
@@ -16,7 +27,7 @@
         </p>
         <!-- <div class="hero__color-block--green"></div>
         <div class="hero__color-block--blue"></div> -->
-        <p class="contact">ig: @somet.zip <br>email: yanliu@hfk-bremen.de</p>
+        <p class="contact">instagram: @somet.zip <br>email: yanliu@hfk-bremen.de</p>
         <div class="hero--subtitle">
           <h2 class="hero--subtitle--1">
             Design & Development
@@ -476,6 +487,7 @@ p.contact {
 }
 
 .grid-toggle {
+  display: none;
   position: fixed;
   bottom: 1.2vw;
   right: 1.2vw;

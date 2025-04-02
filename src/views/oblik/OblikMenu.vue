@@ -1,9 +1,9 @@
 <template>
   <div class="container">
-    <header>
+    <header ref="header">
       <img src="/images/oblik/oblik-logo.svg
       " alt="" class="logo">
-      <button class="btn__menu">
+      <button class="btn__menu" @click="handleMenuClick">
         <img src="/images/oblik/oblik-menu.svg" alt="">
       </button>
       
@@ -12,18 +12,18 @@
       <img src="/images/oblik/oblik-bg.jpg" alt="">
     </div>
     <div class="sections">
-      <section class="agentur">
-      <div class="dot"></div>
-      <div class="text">Agentur</div>
-    </section>
-    <section class="neulich">
-      <div class="dot"></div>
-      <div class="text">Neulich</div>
-    </section>
-    <section class="projekte">
-      <div class="dot"></div>
-      <div class="text">Projekte</div>
-    </section>
+      <section class="agentur" ref="agentur">
+        <div class="text">Agentur</div>
+        <div class="dot"></div>
+      </section>
+      <section class="neulich" ref="neulich">
+        <div class="text">Neulich</div>
+        <div class="dot"></div>
+      </section>
+      <section class="projekte" ref="projekte">
+        <div class="text">Projekte</div>
+        <div class="dot"></div>
+      </section>
     </div>
     
   </div>
@@ -33,7 +33,28 @@
   import { ref, onMounted } from 'vue'
   import gsap from 'gsap'
 
-  
+  const agentur = ref(null)
+  const neulich = ref(null)
+  const projekte = ref(null)
+  const sections = ref([agentur, neulich, projekte])
+  const header = ref(null)
+
+  const handleMenuClick = () => {
+    const elements = sections.value.map(section => section.value)
+    gsap.to(elements, {
+      x: '100vw',
+      duration: 1,
+      stagger: 0.2,
+      ease: 'power2.inOut',
+    })
+
+    gsap.to(header.value, {
+      height: '25vh',
+      padding: '7vh 32px',
+      duration: 1,
+      ease: 'power2.inOut',
+    })
+  }
 
   
 </script>
@@ -41,9 +62,14 @@
 <style scoped>
   .container {
     font-family: 'TT Firs Neue', sans-serif;
-    font-weight: normal;
+    font-weight: 400;
     width: 100vw;
     overflow: hidden;
+    box-sizing: border-box;
+
+    --agentur-color: #ED1345;
+    --neulich-color: #9747FF;
+    --projekte-color: #00EBA1;
   }
 
   .home {
@@ -79,39 +105,63 @@
   }
 
   button.btn__menu {
-    position: absolute;
-    right: 32px;
-    top: 32px;
+    padding: 0;
+    
   }
 
   section {
     position: relative;
     height: 25vh;
     width: 100vw;
-    background-color: #f3f3f3;
+    /* background-color: #f3f3f3; */
+    background-color: #fff;
     user-select: none;
     border-top: 1px solid #d0d0d0;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
   }
 
   .dot {
-    position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 6vh;
+    height: 6vh;
     background-color: #000;
     border-radius: 50%;
-    left: 135px;
-    top: 50%;
+    
     /* transform: translateY(-50%); */
   }
 
   .text {
-    position: absolute;
-    right: 180px;
-    top: 50%;
-    transform: translateY(-50%);
     font-size: 12vh;
-    font-weight: regular;
-    color: #000;
+  }
+
+  .agentur .text {
+    color: var(--agentur-color);
+  }
+  .agentur .dot {
+    background-color: var(--agentur-color);
+  }
+  
+  .neulich .text {
+    color: var(--neulich-color);
+  }
+  .neulich .dot {
+    background-color: var(--neulich-color);
+  }
+  
+  .projekte .text {
+    color: var(--projekte-color);
+  }
+  .projekte .dot {
+    background-color: var(--projekte-color);
+  }
+
+  .agentur {
+    border-bottom: ;
+
   }
 
   .sections{
