@@ -15,7 +15,7 @@ const threeContainer = ref(null);
 // three.js variables
 let scene, camera, renderer, controls, line, clock;
 let animationFrameId; // For cleanup
-let planet, ring1, ring2, ring3 // define global variable for planet
+let planet, ring1, ring2, ring3, moon, moonOrbit // define global variable for planet
 
 // Define world axes
 const worldYAxis = new THREE.Vector3(0, 1, 0);
@@ -101,6 +101,7 @@ const animate = () => {
     // ring1.geometry.rotateY(0.2 * delta);
     ring3.rotation.y -= 0.1 * delta;
 
+    moonOrbit.rotation.y -= 0.2 * delta; 
 
   }
 
@@ -150,6 +151,19 @@ const makeRing = (width, color) => {
   return mesh
 }
 
+const makeMoon = () => {
+  const geometry = new THREE.SphereGeometry(100, 32, 32);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.5,
+    metalness: 0.5,
+    wireframe: false,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+  return mesh;
+}
+
 // handle resize
 const onResize = () => {
   camera.aspect = threeContainer.value.clientWidth / threeContainer.value.clientHeight;
@@ -181,6 +195,15 @@ onMounted(() => {
   ring1 = makeRing(1200, 0xf1f1f1);
   ring2 = makeRing(1400, 0xf1f1f1);
   ring3 = makeRing(1600, 0xf1f1f1);
+  moon = makeMoon();
+  moon.position.set(-1500, 0, 0);
+  
+  moonOrbit = new THREE.Group();
+  scene.add(moonOrbit);
+
+  moonOrbit.add(moon);
+
+
 
 
   
