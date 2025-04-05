@@ -138,6 +138,7 @@ const animate = () => {
 
     moonOrbit.rotation.y -= 0.2 * delta; 
 
+    stars.rotation.y -= 0.1 * delta; // Rotate stars
 
   }
 
@@ -202,7 +203,7 @@ const makeMoon = () => {
 
 const makeStars = () => {
   // create array for star positions (x, y, z)
-  const particleCount = 5000;
+  const particleCount = 2000;
   const particleScatter = 5000
   const positions = new Float32Array(particleCount * 3) // explain
 
@@ -231,8 +232,6 @@ const makeStars = () => {
   const points = new THREE.Points(geometry, material)
   scene.add(points)
   return points
-
-
 }
 
 // handle resize
