@@ -21,7 +21,7 @@ const threeContainer = ref(null);
 // three.js variables
 let scene, camera, renderer, controls, line, clock;
 let animationFrameId; // For cleanup
-let planet, ring1, ring2, ring3, moon, moonOrbit // define global variable for planet
+let planet, ring1, ring2, ring3, moon, moonOrbit, stars // define global variable for planet
 
 // Define world axes
 const worldYAxis = new THREE.Vector3(0, 1, 0);
@@ -196,8 +196,43 @@ const makeMoon = () => {
     wireframe: false,
   });
   const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
+  // scene.add(mesh);
   return mesh;
+}
+
+const makeStars = () => {
+  // create array for star positions (x, y, z)
+  const particleCount = 5000;
+  const particleScatter = 5000
+  const positions = new Float32Array(particleCount * 3) // explain
+
+  // fill array with random values
+  for (let i = 0; i < particleCount; i++) {
+    const i3 = i * 3
+    positions[i3] = (Math.random() - 0.5) * particleScatter
+    positions[i3 + 1] = (Math.random() - 0.5) * particleScatter
+    positions[i3 + 2] = (Math.random() - 0.5) * particleScatter
+  }
+
+  // create buffer geometry
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3)) // explain
+
+  // create material
+  const material = new THREE.PointsMaterial({
+    color: 0x00ff00,
+    size: 20,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.5,
+  })
+
+  // create points
+  const points = new THREE.Points(geometry, material)
+  scene.add(points)
+  return points
+
+
 }
 
 // handle resize
@@ -238,6 +273,7 @@ onMounted(() => {
   ring1 = makeRing(1200, 0xf1f1f1);
   ring2 = makeRing(1400, 0xf1f1f1);
   ring3 = makeRing(1600, 0xf1f1f1);
+  // stars = makeStars();
 
   // add moon group
   moonOrbit = new THREE.Group();
@@ -245,13 +281,9 @@ onMounted(() => {
   // add moon to the group
   moon = makeMoon();
   moon.position.set(-1500, 0, 0);
-
+  stars = makeStars();
 
   moonOrbit.add(moon);
-
-
-
-
 
 
   
