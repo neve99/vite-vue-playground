@@ -204,15 +204,35 @@ const makeMoon = () => {
 const makeStars = () => {
   // create array for star positions (x, y, z)
   const particleCount = 2000;
-  const particleScatter = 5000
+  const particleScatter = 3000
   const positions = new Float32Array(particleCount * 3) // explain
+
+  // create temperary objects to help with the math
+  const spherical = new THREE.Spherical()
+  const vector = new THREE.Vector3()
 
   // fill array with random values
   for (let i = 0; i < particleCount; i++) {
     const i3 = i * 3
-    positions[i3] = (Math.random() - 0.5) * particleScatter
+
+    // Generate random spherical coordinates
+    // Phi: azimuthal angle around y-axis (0 to 2π)
+    // Theta: polar angle from y-axis (0 to π)
+    spherical.phi = Math.random() * Math.PI * 2
+    spherical.theta = Math.random() * Math.PI
+    spherical.radius = Math.random() * particleScatter
+
+    // Convert spherical coordinates to Cartesian coordinates
+    vector.setFromSpherical(spherical)
+
+    // Assign the x, y, z coordinates to the positions array
+    positions[i3] = vector.x
+    positions[i3 + 1] = vector.y
+    positions[i3 + 2] = vector.z
+
+    /* positions[i3] = (Math.random() - 0.5) * particleScatter
     positions[i3 + 1] = (Math.random() - 0.5) * particleScatter
-    positions[i3 + 2] = (Math.random() - 0.5) * particleScatter
+    positions[i3 + 2] = (Math.random() - 0.5) * particleScatter */
   }
 
   // create buffer geometry
