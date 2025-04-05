@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <div class="text">
+      <div class="test"></div>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur animi doloremque, temporibus voluptates tempore quaerat earum laboriosam dignissimos deleniti ab harum quibusdam non voluptatibus distinctio quisquam natus beatae perferendis possimus explicabo maxime! Excepturi, neque sint at laudantium ducimus nam? Rem eos at nesciunt. A esse consectetur facere eveniet aliquam. Amet, recusandae odio nulla dolorum accusamus qui sed modi corporis iste nam labore! Fugiat esse vel tempora unde dicta molestiae eligendi totam rem voluptatibus cumque saepe quas debitis distinctio soluta minus a velit assumenda, dolor consequuntur nesciunt? Enim inventore recusandae aut adipisci nam reprehenderit ipsa iste, dolor impedit animi necessitatibus voluptate?
+      </p>
+    </div>
     <section class="three" ref="threeContainer">
 
     </section>
@@ -22,6 +28,14 @@ const worldYAxis = new THREE.Vector3(0, 1, 0);
 const worldXAxis = new THREE.Vector3(1, 0, 0);
 const worldZAxis = new THREE.Vector3(0, 0, 1);
 
+// tween camera position
+const CAMERA_SMOOTHING = 2 // HIGHER VALUE = faster MOVEMENT
+let currentX = 0
+let currentY = 0
+let targetX = 0
+let targetY = 0
+
+
 
 const initThree = () => {
   // scene
@@ -32,10 +46,12 @@ const initThree = () => {
   camera = new THREE.PerspectiveCamera(
     50,
     threeContainer.value.clientWidth / threeContainer.value.clientHeight,
-    0.1,
-    5000
+    0.1, // Near clipping plane
+    6000 // Far clipping plane
   );
   camera.position.z = -3000;
+
+
   camera.lookAt(scene.position)
 
   // lights
@@ -77,6 +93,17 @@ const animate = () => {
   const delta = clock.getDelta()
   const elapsedTime = clock.getElapsedTime()
 
+  // tween camera position
+  const diffX = targetX - currentX
+  const diffY = targetY - currentY
+  // delta time: seconds per frame
+  const easeFactor = 
+  currentX += diffX * 0.05
+  currentY += diffY * 0.05
+
+  camera.position.x = currentX
+  camera.position.y = currentY
+
   // Update the camera position
   camera.lookAt(scene.position);
   animationFrameId = requestAnimationFrame(animate);
@@ -102,6 +129,7 @@ const animate = () => {
     ring3.rotation.y -= 0.1 * delta;
 
     moonOrbit.rotation.y -= 0.2 * delta; 
+
 
   }
 
@@ -172,6 +200,11 @@ const onResize = () => {
 }
 
 
+const onMousemove = (event) => {
+  targetX = (window.innerWidth / 2 - event.clientX) * 4;
+  targetY = (window.innerHeight / 2 - event.clientY) * 4;
+}
+
 // Handle cleanup
 const cleanup = () => {
   if (animationFrameId) {
@@ -186,6 +219,7 @@ const cleanup = () => {
   }
 
   window.removeEventListener('resize', onResize);
+  window.removeEventListener('mousemove', onMousemove);
 }
 
 onMounted(() => {
@@ -195,13 +229,18 @@ onMounted(() => {
   ring1 = makeRing(1200, 0xf1f1f1);
   ring2 = makeRing(1400, 0xf1f1f1);
   ring3 = makeRing(1600, 0xf1f1f1);
-  moon = makeMoon();
-  moon.position.set(-1500, 0, 0);
-  
+
+  // add moon group
   moonOrbit = new THREE.Group();
   scene.add(moonOrbit);
+  // add moon to the group
+  moon = makeMoon();
+  moon.position.set(-1500, 0, 0);
+
 
   moonOrbit.add(moon);
+
+
 
 
 
@@ -212,6 +251,7 @@ onMounted(() => {
   
   // Add event listeners
   window.addEventListener('resize', onResize);
+  window.addEventListener('mousemove', onMousemove);
 
   // alternative: add scroll event listener
   /* window.addEventListener('scroll', () => {
@@ -227,6 +267,17 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.text{
+  position: relative;
+  z-index: 20;
+}
+.test{
+  position: relative;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  z-index: 100;
+}
 .container {
   position: relative;
   width: 100%;
@@ -239,5 +290,6 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  z-index: 0;
 }
 </style>
