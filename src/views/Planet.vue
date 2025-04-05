@@ -29,7 +29,7 @@ const worldXAxis = new THREE.Vector3(1, 0, 0);
 const worldZAxis = new THREE.Vector3(0, 0, 1);
 
 // tween camera position
-const CAMERA_SMOOTHING = 2 // HIGHER VALUE = faster MOVEMENT
+const CAMERA_SMOOTHING = 35.0 // HIGHER VALUE = faster MOVEMENT
 let currentX = 0
 let currentY = 0
 let targetX = 0
@@ -97,9 +97,17 @@ const animate = () => {
   const diffX = targetX - currentX
   const diffY = targetY - currentY
   // delta time: seconds per frame
-  const easeFactor = 
-  currentX += diffX * 0.05
-  currentY += diffY * 0.05
+  // The 0.95 value controls the "snap" feeling (lower values = sharper movement)
+  const easeFactor = 1.0 - Math.pow(0.95, delta * CAMERA_SMOOTHING)
+  
+  // apply smoothing 
+  currentX += diffX * easeFactor
+  currentY += diffY * easeFactor
+
+  // Optional: Add constraints to prevent excessive movement
+  const maxDistance = 5000;
+  currentX = Math.max(-maxDistance, Math.min(maxDistance, currentX));
+  currentY = Math.max(-maxDistance, Math.min(maxDistance, currentY));
 
   camera.position.x = currentX
   camera.position.y = currentY
@@ -220,6 +228,7 @@ const cleanup = () => {
 
   window.removeEventListener('resize', onResize);
   window.removeEventListener('mousemove', onMousemove);
+  window.removeEventListener('touchmove', onMousemove);
 }
 
 onMounted(() => {
@@ -252,6 +261,7 @@ onMounted(() => {
   // Add event listeners
   window.addEventListener('resize', onResize);
   window.addEventListener('mousemove', onMousemove);
+  window.addEventListener('touchmove', onMousemove);
 
   // alternative: add scroll event listener
   /* window.addEventListener('scroll', () => {
