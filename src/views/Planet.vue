@@ -22,6 +22,8 @@ const threeContainer = ref(null);
 let scene, camera, renderer, controls, line, clock;
 let animationFrameId; // For cleanup
 let planet, ring1, ring2, ring3, moon, moonOrbit, stars // define global variable for planet
+const textureLoader = new THREE.TextureLoader();
+let isMouseDown = ref(false);
 
 // Define world axes
 const worldYAxis = new THREE.Vector3(0, 1, 0);
@@ -148,7 +150,6 @@ const animate = () => {
 const makePlanet = () => {
   // Create a sphere geometry with a radius of 800 and 128 segments, and put a material
   const geometry = new THREE.SphereGeometry(800, 128, 128)
-  const textureLoader = new THREE.TextureLoader();
   const texture = textureLoader.load('/images/matter/somet-1510x307.png');
 
   const material = new THREE.MeshStandardMaterial({
@@ -203,7 +204,7 @@ const makeMoon = () => {
 
 const makeStars = () => {
   // create array for star positions (x, y, z)
-  const particleCount = 2000;
+  const particleCount = 200;
   const particleScatter = 3000
   const positions = new Float32Array(particleCount * 3) // explain
 
@@ -240,12 +241,18 @@ const makeStars = () => {
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3)) // explain
 
   // create material
+  const texture = textureLoader.load('/images/planet/star_texture.png');
   const material = new THREE.PointsMaterial({
     color: 0x00ff00,
-    size: 20,
+    size: 180,
+    map: texture,
     sizeAttenuation: true,
     transparent: true,
-    opacity: 0.5,
+    // opacity: 0.2,
+    // blending: THREE.AdditiveBlending,
+    alphaTest: 0.5,
+    depthTest: true,
+    depthWrite: false,
   })
 
   // create points
@@ -313,6 +320,12 @@ onMounted(() => {
   window.addEventListener('resize', onResize);
   window.addEventListener('mousemove', onMousemove);
   window.addEventListener('touchmove', onMousemove);
+  window.addEventListener('mousedown', () => {
+    isMouseDown.value = true;
+  });
+  window.addEventListener('mouseup', () => {
+    isMouseDown.value = false;
+  });
 
   // alternative: add scroll event listener
   /* window.addEventListener('scroll', () => {
