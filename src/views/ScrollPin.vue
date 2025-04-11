@@ -22,7 +22,7 @@
   </section>
 
   <section class="intro">
-    <div class="video-container-desktop">
+    <div class="video-container-desktop" ref="videoContainerRef">
       <div class="video-preview">
         <div class="video-wrapper">
           <iframe 
@@ -50,7 +50,241 @@
 </div>
 </template>
 
-<script setup> 
+<script setup>
+import { onMounted, ref, onUnmounted } from 'vue';
+import Lenis from '@studio-freight/lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
+
+const videoContainerRef = ref(null);
+
+const cleanUp = () => {
+  // remove the event listener when the component is destroyed
+  window.removeEventListener('mousemove', () => {})
+  window.removeEventListener('resize', () => {})
+
+  // Cancel animation frame
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+  }
+
+  // Kill all ScrollTrigger instances
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  
+  // Kill Lenis
+  if (window.lenis) {
+    window.lenis.destroy();
+  }
+
+}
+
+onMounted(() => {
+  // select some elements
+  const videoTitleElements = document.querySelectorAll('.video-title p')
+  const videoContainer = videoContainerRef.value
+
+  
+  if (window.innerWidth >= 900) {
+    //setup a lenis and integrate with gsap scrollTrigger, pretty standard
+    const lenis = new Lenis()
+    lenis.on('scroll', ScrollTrigger.update)
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000)
+    })
+
+    gsap.ticker.lagSmoothing(0)
+
+    // adjust the starting vertical position and movement sensitivity according to different screen sizes dynamically
+    // smaller screens starts the video container higher and use a smaller movement multiplier
+    const breakpoint = [
+      { maxWidth:1000, translateY: -135, movMultiplier: 450},
+      { maxWidth:1100, translateY: -130, movMultiplier: 500},
+      { maxWidth:1200, translateY: -125, movMultiplier: 550},
+      { maxWidth:1300, translateY: -120, movMultiplier: 600},
+    ]
+
+    // use a function that checks the current screen width and loop through each breaking point, returns the appropriate values
+    // if the screen is smaller than the last breakpoint, return the translateY and movMultiplier values
+    // these values determine how far up the video container starts and how sensitive the movement is when moving the mouse horizontally
+    const getInitialValues = () => {
+      const width = window.innerWidth
+
+      for (const bp of breakpoint) {
+        if (width <= bp.maxWidth) {
+          return {
+            translateY: bp.translateY,
+            movementMultiplier: bp.movMultiplier
+          }
+        }
+      }
+
+      // if the screen is larger than all of the breakpoint, return these values
+      return {
+        translateY: -110,
+        movementMultiplier: 650,
+      }
+    }
+
+    const initialValues = getInitialValues()
+
+    // set up an object to manage the entire animation state, keeping track of everything that is changing during the animation
+    const animationState = {
+      scrollProgress: 0,
+      initialTranslateY : initialValues.translateY,
+      currentTranslateY : initialValues.translateY,
+      movementMultiplier : initialValues.movMultiplier,
+      scale: 0.25,
+      fontSize: 80,
+      gap: 2,
+      targetMouseX: 0,
+      currentMouseX: 0,
+    }
+
+    // make the animation responsive
+    window.addEventListener('resize', () => {
+      const newValues = getInitialValues()
+      animationState.initialTranslateY = newValues.translateY
+      animationState.movementMultiplier = newValues.movementMultiplier
+
+      if (animationState.scrollProgress === 0) {
+        animationState.currentTranslateY = newValues.translateY
+      }
+    })
+
+    gsap.timeline ({
+      scrollTrigger: {
+        trigger:'.intro',
+        start:'top bottom',
+        end: 'top 10%',
+        // meaning the animation progress is directly tied to the scroll progress
+        scrub: true,
+        onUpdate: (self) => {
+          // scroll progress works
+          //console.log("ScrollTrigger progress:", self.progress);
+          animationState.scrollProgress = self.progress
+          // this works too
+          // console.log("Before update - Current scale:", animationState.scale);
+
+          animationState.currentTranslateY = gsap.utils.interpolate(
+            animationState.initialTranslateY,
+            0,
+            animationState.scrollProgress
+          )
+
+          animationState.scale = gsap.utils.interpolate(
+            0.25,
+            1,
+            animationState.scrollProgress
+          )
+
+          animationState.gap = gsap.utils.interpolate(
+            2,
+            1,
+            animationState.scrollProgress
+          )
+
+          // font size animation with 2 phases
+          // first 40% of the scroll progress, the font size shrink from 80px to 40px
+          if (animationState.scrollProgress <= 0.4) {
+            const firstPartProgress = animationState.scrollProgress / 0.4
+            animationState.fontSize = gsap.utils.interpolate(
+              80,
+              40,
+              firstPartProgress
+            )
+          }else {
+            // after 40% of the scroll progress, the font size shrink from 40px to 20px
+            // the shrinking is slower in this phase
+            // by spliting the animation into 2 phases, we can create an illusion that the font size is not really changing and is staying static
+            const secondPartProgress = (animationState.scrollProgress - 0.4) / (1 - 0.4)
+            animationState.fontSize = gsap.utils.interpolate(
+              40,
+              20 ,
+              secondPartProgress
+            )
+          }
+
+        }
+      }
+    })
+
+    document.addEventListener('mousemove', (e) => {
+      // calculate the mouse position relative to the screen width
+      // and map it to a range of -1 to 1
+      animationState.targetMouseX = (e.clientX / window.innerWidth - 0.5) * 2
+    })
+
+    const animate = () => {
+      // don't want the animation to run on mobile
+      if (window.innerWidth < 900) {
+        return
+      }
+
+      const {
+        scale,
+        targetMouseX,
+        currentMouseX,
+        currentTranslateY,
+        movementMultiplier,
+        gap,
+        fontSize,
+      } = animationState
+
+      // Log animation state values -- also works
+      // console.log("Animation frame - scale:", scale, "translateY:", currentTranslateY);
+  
+      // Log the actual transform being applied -- also works
+      // console.log("Transform string:", `translateY(${currentTranslateY}%) scale(${scale}) translateX(${animationState.currentMouseX}px)`);
+  
+
+      // calculate how much horizontal movement to apply based on the current scale of the container
+      // the smaller the container, the more responsive it is to mouse movement
+      const scaleMovementMultiplier = (1 - scale) * movementMultiplier
+
+      // gradually weaken that effect, and check if the scale is smaller that 0.95, if it is, we calculate how far the container should move left or right
+      // if the scale is larger than 0.95, we don't want to move the container at all
+      const maxHorizontalMovement = scale < 0.95 ? targetMouseX * scaleMovementMultiplier : 0
+
+      // create a delay effect to smooth out the movement
+      animationState.currentMouseX = gsap.utils.interpolate(
+        currentMouseX,
+        maxHorizontalMovement,
+        0.05
+      )
+
+      // set the position and scale of the video container
+      videoContainer.style.willChange = 'transform'
+      // videoContainer.style.transform = `scale(${scale}) translateY(${currentTranslateY}%) translateX(${animationState.currentMouseX}px)`
+      videoContainer.style.transform = ` 
+        translateY(${currentTranslateY}%) 
+        scale(${scale})`
+      // videoContainer.style.transform = `translateX(${animationState.currentMouseX}px`
+      // console.log(animationState.currentMouseX)
+
+
+      videoContainerRef.value.style.gap = `${gap}em`
+
+      videoTitleElements.forEach((el) => {
+        el.style.fontSize = `${fontSize}px`
+      })
+
+      // keep teh animation loop going
+      requestAnimationFrame(animate)
+    }
+
+    // see above
+    animate()
+
+    
+  }
+
+})
+
+onUnmounted(() => {
+  cleanUp()
+})
 </script>
 
 <style scoped>
