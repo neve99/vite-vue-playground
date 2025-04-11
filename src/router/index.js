@@ -42,6 +42,10 @@ const routes = [
     path: '/planet',
     component: () => import('../views/Planet.vue'),
   },
+  {
+    path: '/scrollpin',
+    component: () => import('../views/ScrollPin.vue'),
+  },
 ]
 
 const router = createRouter({
