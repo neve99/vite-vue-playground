@@ -128,20 +128,22 @@ onMounted(() => {
     }
 
     const initialValues = getInitialValues()
-
+    // console.log('Initial values movementMultiplier:', initialValues.movementMultiplier);
     // set up an object to manage the entire animation state, keeping track of everything that is changing during the animation
     const animationState = {
       scrollProgress: 0,
       initialTranslateY : initialValues.translateY,
       currentTranslateY : initialValues.translateY,
-      movementMultiplier : initialValues.movMultiplier,
+      movementMultiplier : initialValues.movementMultiplier,
       scale: 0.25,
       fontSize: 80,
       gap: 2,
       targetMouseX: 0,
       currentMouseX: 0,
     }
-
+    // initialization animationState works
+    // console.log('Initial animationState:', JSON.stringify(animationState));
+    // console.log('Initial animationState currentMouseX:', animationState.currentMouseX);
     // make the animation responsive
     window.addEventListener('resize', () => {
       const newValues = getInitialValues()
@@ -221,17 +223,21 @@ onMounted(() => {
       if (window.innerWidth < 900) {
         return
       }
+      // console.log('in animate: animationState.currentMouseX type:', typeof animationState.currentMouseX, 'value:', animationState.currentMouseX);
 
       const {
         scale,
         targetMouseX,
-        currentMouseX,
         currentTranslateY,
         movementMultiplier,
+        currentMouseX,
         gap,
         fontSize,
       } = animationState
 
+
+      // console.log('currentMouseX type:', typeof currentMouseX, 'value:', currentMouseX);
+      // console.log('animationState.currentMouseX type:', typeof animationState.currentMouseX, 'value:', animationState.currentMouseX);
 
 
       // Log animation state values -- also works
@@ -244,10 +250,13 @@ onMounted(() => {
       // calculate how much horizontal movement to apply based on the current scale of the container
       // the smaller the container, the more responsive it is to mouse movement
       const scaleMovementMultiplier = (1 - scale) * movementMultiplier
-
+      // console.log('movementMultiplier:', movementMultiplier);
       // gradually weaken that effect, and check if the scale is smaller that 0.95, if it is, we calculate how far the container should move left or right
       // if the scale is larger than 0.95, we don't want to move the container at all
       const maxHorizontalMovement = scale < 0.95 ? targetMouseX * scaleMovementMultiplier : 0
+      // console.log('maxHorizontalMovement:', maxHorizontalMovement);
+      // console.log('targetMouseX:', targetMouseX);
+      // console.log('scaleMovementMultiplier:', scaleMovementMultiplier);
 
       // create a delay effect to smooth out the movement
       animationState.currentMouseX = gsap.utils.interpolate(
@@ -256,13 +265,14 @@ onMounted(() => {
         0.05
       )
       
-      
+      // console.log('animationState.currentMouseX:', animationState.currentMouseX);
       
       // set the position and scale of the video container
       videoContainer.style.willChange = 'transform'
       // videoContainer.style.transform = `scale(${scale}) translateY(${currentTranslateY}%) translateX(${animationState.currentMouseX}px)`
       videoContainer.style.transform = `
         translateY(${currentTranslateY}%) 
+        translateX(${animationState.currentMouseX}px)
         scale(${scale})`
       // videoContainer.style.transform = `translateX(${animationState.currentMouseX}px`
       // console.log(animationState.currentMouseX)
