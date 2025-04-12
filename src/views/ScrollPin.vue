@@ -232,6 +232,8 @@ onMounted(() => {
         fontSize,
       } = animationState
 
+
+
       // Log animation state values -- also works
       // console.log("Animation frame - scale:", scale, "translateY:", currentTranslateY);
   
@@ -253,11 +255,13 @@ onMounted(() => {
         maxHorizontalMovement,
         0.05
       )
-
+      
+      
+      
       // set the position and scale of the video container
       videoContainer.style.willChange = 'transform'
       // videoContainer.style.transform = `scale(${scale}) translateY(${currentTranslateY}%) translateX(${animationState.currentMouseX}px)`
-      videoContainer.style.transform = ` 
+      videoContainer.style.transform = `
         translateY(${currentTranslateY}%) 
         scale(${scale})`
       // videoContainer.style.transform = `translateX(${animationState.currentMouseX}px`
