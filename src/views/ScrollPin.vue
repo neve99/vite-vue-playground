@@ -91,7 +91,7 @@ onMounted(() => {
     lenis.on('scroll', ScrollTrigger.update)
 
     gsap.ticker.add((time) => {
-      lenis.raf(time * 1000)
+      lenis.raf(time * 2000) // here to adjust the smoothness of the scroll
     })
 
     gsap.ticker.lagSmoothing(0)
@@ -251,6 +251,7 @@ onMounted(() => {
       // the smaller the container, the more responsive it is to mouse movement
       const scaleMovementMultiplier = (1 - scale) * movementMultiplier
       // console.log('movementMultiplier:', movementMultiplier);
+      
       // gradually weaken that effect, and check if the scale is smaller that 0.95, if it is, we calculate how far the container should move left or right
       // if the scale is larger than 0.95, we don't want to move the container at all
       const maxHorizontalMovement = scale < 0.95 ? targetMouseX * scaleMovementMultiplier : 0

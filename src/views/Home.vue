@@ -13,6 +13,7 @@
       <router-link to="/grid">Grid</router-link>
       <router-link to="/planet">Planet</router-link>
       <router-link to="/scrollpin">Scroll Pin</router-link>
+      <router-link to="/scrollreveal">Scroll Reveal</router-link>
 
 
 

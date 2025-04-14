@@ -46,6 +46,10 @@ const routes = [
     path: '/scrollpin',
     component: () => import('../views/ScrollPin.vue'),
   },
+  {
+    path: '/scrollreveal',
+    component: () => import('../views/ScrollReveal.vue'),
+  },
 ]
 
 const router = createRouter({
