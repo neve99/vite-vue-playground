@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",
+    "@vueuse/core": "^13.1.0",
     "gsap": "^3.12.7",
     "matter-js": "^0.20.0",
     "three": "^0.174.0",

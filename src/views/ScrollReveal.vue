@@ -30,29 +30,19 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from '@studio-freight/lenis'
+import { useScroll } from '@vueuse/core'
+import { useWindowSize } from '@vueuse/core'
 
 gsap.registerPlugin(ScrollTrigger)
+const lenis = new Lenis 
+const { x, y } = useScroll(window)
+const { width, height } = useWindowSize()
 
 
-// Generate 10 image URLs using a template
-/* const imageUrls = [
-  'https://picsum.photos/seed/pic1/500/500',
-  'https://picsum.photos/seed/pic2/500/500',
-  'https://picsum.photos/seed/pic3/500/500',
-  'https://picsum.photos/seed/pic4/500/500',
-  'https://picsum.photos/seed/pic5/500/500',
-  'https://picsum.photos/seed/pic6/500/500',
-  'https://picsum.photos/seed/pic7/500/500',
-  'https://picsum.photos/seed/pic8/500/500',
-  'https://picsum.photos/seed/pic9/500/500',
-  'https://picsum.photos/seed/pic10/500/500',
-  ]; */
-const imageUrls = Array.from({ length: 20 }, (_, index) => {
-  return `https://picsum.photos/800/800?random=${index + 1}`;
-});
 
 // generate 10 rows, each with 4 columns
 const rows = ref(
@@ -64,7 +54,7 @@ const rows = ref(
       
       // Calculate a unique image index for this cell
       // Using (rowIndex * 4 + colIndex) ensures each cell gets a different image
-      const imageIndex = (rowIndex * 4 + colIndex) % imageUrls.length;
+      const uniqueIndex = (rowIndex * 4 + colIndex) 
 
       // Randomly choose "left" or "right" for data-origin
       const origin = Math.random() > 0.5 ? "left" : "right";
@@ -72,12 +62,41 @@ const rows = ref(
       // If it has an image, use the deterministic image index
       return {
         hasImage,
-        imageUrl: hasImage ? imageUrls[imageIndex] : '',
+        imageUrl: hasImage ? `https://picsum.photos/800/800?random=${uniqueIndex}` : '',
         origin
       };
     });
   })
 )
+
+const cleanup = () => {
+  // Clean up Lenis
+  if (lenis) {
+    // Remove GSAP ticker callback
+    gsap.ticker.remove(lenis.raf);
+    
+    // Destroy Lenis instance
+    lenis.destroy();
+  }
+
+  // Kill all ScrollTrigger instances
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+}
+
+onMounted (() => {
+
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  })
+
+  // since lenis is hanlding the scroll, we need to disable the lag smoothing behavior of gsap
+  gsap.ticker.lagSmoothing(0)
+})
+
+onUnmounted(() => {
+  cleanup()
+})
 </script>
 
 <style scoped>
