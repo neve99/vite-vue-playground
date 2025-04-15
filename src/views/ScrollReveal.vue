@@ -125,10 +125,77 @@ const imgAnimate = () => {
           gsap.set(rowImages, {scale: 1, force3D: true})
         }
       })
+
+      // handle scale out animation
+      ScrollTrigger.create({
+        id: `scaleOut-${index}`,
+        trigger: row,
+        start: 'top top',
+        end: 'bottom top',
+        pin: true, // pin the row in place for a brief moment to make the scroll smoother
+        pinSpacing: false, // prevent the row from pushing the content below it
+        scrub: 1, // the animation will follow the scroll
+        invalidateOnRefresh: true, // the animation will be recalculated on refresh
+        onEnter: function () {
+          gsap.set(rowImages, {scale: 1, force3D: true})
+        },
+        onUpdate: function(self) {
+          if (self.isActive) {
+            const scale = gsap.utils.interpolate(1, 0, self.progress)
+            
+            rowImages.forEach((img) => {
+              gsap.set(img, {
+                scale: scale,
+                force3D: true,
+                clearProps: self.progress === 1 ? 'scale' : '', // clear the scale property when the animation is done
+              })
+            })
+          } else {
+            const isAbove = self.scroll() < self.start; // check if the row is above the viewport
+            if (isAbove) { 
+              gsap.set(rowImages, {
+                scale: 1,
+                force3D: true,
+              })
+            }
+          }
+        }
+      })
+
+      // enforce the scale out animation when the row is out of view, add another scroll trigger as safety measure
+      /* ScrollTrigger.create({
+        id: `marker-${index}`,
+        trigger: row,
+        start: 'bottom bottom',
+        end: 'top top',
+        onEnter: function () {
+          const scaleOut = ScrollTrigger.getById(`scaleOut-${index}`);
+          if (scaleOut && scaleOut.progress === 0 ) {
+            gsap.set(rowImages, {scale: 1, force3D: true})
+          }
+        },
+        onLeave: function() {
+          const scaleOut = ScrollTrigger.getById(`scaleOut-${index}`);
+          if (scaleOut && scaleOut.progress === 0) {
+            gsap.set(rowImages, {scale: 1, force3D: true})
+          }
+        },
+        onEnterBack: function () {
+          const scaleOut = ScrollTrigger.getById(`scaleOut-${index}`);
+          if (scaleOut && scaleOut.progress === 0) {
+            gsap.set(rowImages, {scale: 1, force3D: true})
+          }
+        },
+
+      }) */
     }
     
   })
 
+}
+
+const handleResize = () => {
+  ScrollTrigger.refresh(true)
 }
 
 const cleanup = () => {
@@ -143,11 +210,15 @@ const cleanup = () => {
 
   // Kill all ScrollTrigger instances
   ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  // Remove event listeners
+  window.removeEventListener('resize', handleResize);
 }
+
 
 onMounted (() => {
   initializeLenis()
   imgAnimate()
+  window.addEventListener('resize', handleResize)
 })
 
 onUnmounted(() => {
