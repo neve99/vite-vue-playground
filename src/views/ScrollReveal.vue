@@ -6,7 +6,7 @@
     </section>
     <section class="work">
       <!-- loop through 10 rows -->
-      <div class="row" v-for="(row, rowIndex) in rows" :key="`row-${rowIndex}`">
+      <div class="row" ref="rowRef" v-for="(row, rowIndex) in rows" :key="`row-${rowIndex}`">
         <!--loop through 4 columns in each row-->
         <div
           class="col"
@@ -42,6 +42,7 @@ const lenis = new Lenis
 const { x, y } = useScroll(window)
 const { width, height } = useWindowSize()
 
+const rowRef = ref(null)
 
 
 // generate 10 rows, each with 4 columns
@@ -69,6 +70,67 @@ const rows = ref(
   })
 )
 
+const initializeLenis = () => {
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  })
+
+  // since lenis is hanlding the scroll, we need to disable the lag smoothing behavior of gsap
+  gsap.ticker.lagSmoothing(0)
+}
+
+const imgAnimate = () => {
+  // set force3D to true to ensure GPU acceleration
+  gsap.set('.img', {
+    scale: 0,
+    force3D: true,
+  })
+
+  const rowsArray = document.querySelectorAll('.row')
+  rowsArray.forEach((row, index) => {
+    const rowImages = row.querySelectorAll('.img')
+
+    if (rowImages.length > 0) {
+      row.id = `row-${index}`
+
+      ScrollTrigger.create({
+        id: `scaleIn-${index}`,
+        trigger: row,
+        start:'top bottom', // animation begins when top of the row hits the bottom of the viewport
+        end: 'bottom bottom-=10%', // animation ends when the bottom of the row hits the bottom minus 10% of the viewport
+        scrub: 1, // the animation will follow the scroll
+        invalidateOnRefresh: true, // the animation will be recalculated on refresh
+        onUpdate: function (self) { // check if the row is in view
+          if (self.isActive) {
+            const progress = self.progress;
+            const easedProgress = Math.min(1, progress * 1.5); // Easing effect, give the scroll a more natural feel
+            const scaleValue = gsap.utils.interpolate(0, 1, easedProgress); // Interpolate scale value
+
+            rowImages.forEach((img) => {
+              gsap.set(img, {
+                scale: scaleValue,
+                force3D: true,
+              })
+            })
+
+            // prevent inconsistent jittery 
+            if(progress > 0.95) {
+              gsap.set(rowImages, {scale: 1, force3D: true})
+            }
+          }
+        },
+        // define what happens when the row is out of view
+        onLeave: function () {
+          gsap.set(rowImages, {scale: 1, force3D: true})
+        }
+      })
+    }
+    
+  })
+
+}
+
 const cleanup = () => {
   // Clean up Lenis
   if (lenis) {
@@ -84,14 +146,8 @@ const cleanup = () => {
 }
 
 onMounted (() => {
-
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  })
-
-  // since lenis is hanlding the scroll, we need to disable the lag smoothing behavior of gsap
-  gsap.ticker.lagSmoothing(0)
+  initializeLenis()
+  imgAnimate()
 })
 
 onUnmounted(() => {
